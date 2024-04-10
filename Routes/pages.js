@@ -8,10 +8,14 @@ router.get('/', (req, res) => {
     res.render("LogIn");
 });
 
-// Route for serving the login page
+// Route for serving the home page
 router.get('/Home', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'FrontEnd/LogIn', 'LogIn.html'));
     res.render("Home");
+});
+
+// Route for serving the home page
+router.get('/ChangePassword', (req, res) => {
+    res.render("ChangePassword");
 });
 
 module.exports = router;
