@@ -27,11 +27,3 @@ function updatePassword(EmailID,newPassword) {
 }
 
 module.exports = {authorizeUser,updatePassword};
-
-// checkUser("202251127@iiitvadodara.ac.in", "202251127")
-//     .then(userFound => {
-//         console.log(userFound); // true if user found, false if not found
-//     })
-//     .catch(error => {
-//         console.error(error); // Log any errors that occurred during the query
-//     });

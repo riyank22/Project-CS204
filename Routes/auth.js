@@ -1,7 +1,12 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const {authorizeUser,updatePassword} = require('../queries/authQuery');
-
 const router = express.Router();
+const cookieParser = require('cookie-parser');
+
+router.use(cookieParser());
+
+const {JWT_SECRET} = process.env;
 
 // Route for serving the login page
 router.post('/LogIn', (req,res) => {
@@ -10,9 +15,17 @@ router.post('/LogIn', (req,res) => {
         {
             if(output)
             {
-                return res.render('Home', {
-                    EmailID: EmailID
-                })
+                jwt.sign({EmailID: EmailID}, 'alpha', {expiresIn: '1h'}, (err, token) => {
+                    if(err) {
+                        console.error('Error generating token:', err);
+                        return res.status(500).json({message: 'Internal Server Error'});
+                    }
+                    console.log('Token:', token);
+                    res.cookie('token', token, { httpOnly: true });
+                    return res.render('Home', {
+                        EmailID: EmailID
+                    })
+                });
             }
             else
             {
@@ -25,7 +38,12 @@ router.post('/LogIn', (req,res) => {
 
 // Route for serving the login page
 router.post('/ChangePassword', (req,res) => {
-    const {EmailID, password} = req.body;
+
+    console.log(req.body);
+    
+    const {EmailID} = jwt.verify(req.cookies.token, 'alpha');
+
+    const {password} = req.body;
     updatePassword(EmailID, password).then(output => 
         {
             if(output)
