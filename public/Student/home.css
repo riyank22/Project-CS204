@@ -1,0 +1,32 @@
+body {
+    background-color: #222; /* Dark background color */
+    color: #00FF00; /* Green text color */
+    font-family: Arial, sans-serif; /* Font family */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333; /* Darker background color for the navbar */
+}
+
+.nav-right {
+    margin-left: auto;
+}
+.btn {
+    background-color: #555; /* Button background color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #777; /* Darker background color on hover */
+}

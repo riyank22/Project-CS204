@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/Teacher/home.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <h1>Group Management System</h1>
+            <h2> Welcome {{EmailID}}</h2>
+        </div>
+        <div class="nav-right">
+            <a href="/Teacher/ProfilePage" class="btn">Profile Page</a>
+            <a href="/LogOut"class="btn">Log Out</a>
+            <a href = "/Teacher/CreateCourse" class="btn">Create Course</a>
+        </div>
+    </nav>
+
+    <div class="card-container">
+        {{#each Courses}}
+        <div class="card">
+            <div class="card-content">
+                <h2>{{this.Course_Code}}</h2>
+                <h2>{{this.Course_Name}}</h2>
+                <h2>{{this.Year}}</h2>
+                <a href="#" class="btn">Join</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</body>
+</html>

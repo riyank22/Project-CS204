@@ -1,0 +1,51 @@
+body {
+    background-color: #222; /* Dark background color */
+    color: #00FF00; /* Green text color */
+    font-family: Arial, sans-serif; /* Font family */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333; /* Darker background color for the navbar */
+}
+
+.nav-right {
+    margin-left: auto;
+}
+.btn {
+    background-color: #555; /* Button background color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #777; /* Darker background color on hover */
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: -10px; /* Negative margin to counteract padding */
+}
+
+.card {
+    width: calc(33.33% - 20px); /* Adjust the width to fit 3 cards in a row */
+    background-color: #1b1825;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(127, 223, 24, 0.1);
+    margin: 10px; /* Adjust margin to create space between cards */
+}
+
+.card-content {
+    padding: 20px;
+}
