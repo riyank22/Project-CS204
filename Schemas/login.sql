@@ -6,3 +6,4 @@ create table LogIn(
 
 INSERT INTO LogIn VALUES('202251127@iiitvadodara.ac.in','202251127','s');
 INSERT INTO LogIn VALUES('202251125@iiitvadodara.ac.in','202251125','s');
+INSERT INTO LogIn VALUES('teacher1@iiitvadodara.ac.in','teacter','t');

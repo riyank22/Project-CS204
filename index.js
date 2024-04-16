@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express()
+const router = express.Router();
 
 dotenv.config({path : "./env"})
 
@@ -15,7 +16,9 @@ app.use(express.json());
 app.set('view engine','hbs');
 
 app.use('/', require('./Routes/pages'));
-app.use('/auth', require('./Routes/auth'))
+app.use('/auth', require('./Routes/auth'));
+app.use('/Teacher', require('./Routes/Teacher'));
+app.use('/Student', require('./Routes/Student'));
 
 PORT = 5000;
 

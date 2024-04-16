@@ -11,10 +11,7 @@ router.get('/', (req, res) => {
 
 // Route for serving the home page
 router.get('/Home', (req, res) => {
-    if(req.cookies.token == null) {
-        return res.render('LogIn');
-    }
-    res.render("Home");
+    res.render("");
 });
 
 // Route for serving the home page

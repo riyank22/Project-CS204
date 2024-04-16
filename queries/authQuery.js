@@ -7,8 +7,15 @@ function authorizeUser(EmailID, pass) {
             console.error('Error querying LogIn table:', err);
             reject(err);
         }
-        
-        resolve(results.length == 1);
+
+        else if(results.length == 1)
+        {
+            resolve(results[0].role);
+        }
+        else
+        {
+            resolve("n");
+        }
     }));
 }
 
@@ -26,4 +33,38 @@ function updatePassword(EmailID,newPassword) {
     }));
 }
 
-module.exports = {authorizeUser,updatePassword};
+function getRoll(EmailId, Roll)
+{
+    if(Roll == "s")
+    {
+        console.log("Gettting RollNo");
+        return new Promise((resolve,reject) => db.query(`SELECT RollNo from student join LogIn on student.EmailAddress = LogIn.EmailAddress where student.EmailAddress = ?`,
+        [EmailId],(err, result) => {
+            if (err) {
+                console.error('Error querying Student table:', err);
+                reject(err);
+            }
+            else
+            {
+                resolve(result[0].RollNo);
+            }
+        })) 
+    }
+
+    else
+    {
+        return new Promise((resolve,reject) => db.query(`SELECT Teacher_ID from teacher join LogIn on teacher.EmailAddress = LogIn.EmailAddress where teacher.EmailAddress = ?`,
+        [EmailId],(err, result) => {
+            if (err) {
+                console.error('Error querying LogIn table:', err);
+                reject(err);
+            }
+            else
+            {
+                resolve(result[0].Teacher_ID);
+            }
+        })) 
+    }
+}
+
+module.exports = {authorizeUser,updatePassword, getRoll};
