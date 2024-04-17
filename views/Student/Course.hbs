@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/Student/home.css">
+</head>
+<body>
+    <div class="bubble"></div>
+<div class="bubble" style="top: 30%; left: 70%;"></div>
+<div class="bubble" style="top: 70%; left: 30%;"></div>
+<div class="bubble" style="top: 10%; left: 40%;"></div>
+<div class="bubble" style="top: 80%; left: 80%;"></div>
+<div class="bubble" style="top: 50%; left: 20%;"></div>
+<div class="bubble" style="top: 40%; left: 60%;"></div>
+<div class="bubble" style="top: 20%; left: 90%;"></div>
+<div class="bubble" style="top: 90%; left: 10%;"></div>
+<div class="bubble" style="top: 60%; left: 50%;"></div>
+
+
+    <script>
+        // JavaScript to add the 'move' class to the bubble divs after the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach((bubble, index) => {
+                setTimeout(() => {
+                    bubble.classList.add('move');
+                }, index * 500); // Delay each bubble's animation start by 500 milliseconds
+            });
+        });
+    </script>
+    <nav>
+        <div class="logo">
+            <h1>Group Management System</h1>
+        </div>
+        <div class="nav-right">
+            <a href = "Unenroll?Course_ID={{Course.Course_ID}}" class="btn">Unenroll</a>
+        </div>
+    </nav>
+
+    <h1>{{Course.Course_Code}} {{Course.Course_Name}}</h1>
+    <h2> Course ID {{Course.Course_ID}}</h2>
+</body>
+</html>
