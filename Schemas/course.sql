@@ -21,3 +21,6 @@ create table Enrollement(
     PRIMARY KEY (RollNo, Course_ID,Year)
 );
 Insert into Enrollement values('202251127', 1);
+
+SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID
+where RollNo = '202251127' and Year = 2023;

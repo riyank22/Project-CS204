@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const {fetchProfileTeacher} = require('../queries/profile');
-const {createCourse, fetchCoursesTeacher} = require('../queries/CourseQuery');
+const {createCourse, fetchCoursesTeacher, viewCourse, deleteCourse} = require('../queries/CourseQuery');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 
@@ -67,5 +67,34 @@ router.post('/CreateCourse', (req,res) => {
         }
     })
 });
+
+router.get('/Course', (req,res) => {
+    const id = req.query.id;
+    viewCourse(id).then(output => {
+        res.render('Teacher/Course', {
+            Course: output[0]
+        });
+    });
+});
+
+router.get('/DeleteCourse', (req,res) => {
+    const Course_Id = req.query.Course_ID;
+    const token = req.cookies.token;
+    console.log(token);
+    const ou = jwt.verify(token, 'alpha');
+    console.log(Course_Id);
+    console.log(ou);
+    const id = ou.id;
+    deleteCourse(Course_Id).then(output => {
+        if(output == 1)
+        {
+            res.redirect('/Teacher/Home?id='+id);
+        }
+        else
+        {
+            console.log(output);
+        }
+    });
+})
 
 module.exports = router;

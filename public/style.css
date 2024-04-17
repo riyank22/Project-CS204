@@ -1,36 +1,126 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #000000;
-    color: #FFFFFF;
+    background-image: url('https://img.freepik.com/free-vector/computer-technology-isometric-icon-server-room-digital-device-set-element-design-pc-laptop_39422-1026.jpg?size=626&ext=jpg&ga=GA1.1.1738681452.1713296586&semt=sph'); /* Background image link */
+    background-color: #716f6f; /* Dark background color */
+    color: #5e5c5c; /* Green text color */
+    font-family: Arial, sans-serif; /* Font family */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-size: cover; /* Cover the entire viewport */
+    background-position: center; /* Center the background image */
+    background-attachment: fixed; /* Fixed background position */
+    background-repeat: no-repeat; /* Prevent background image from repeating */
+}
+.bubble {
+    width: 140px;
+    height: 140px;
+    background-color: rgba(242, 241, 245, 0.5); /* Transparent background color */
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 1s ease;
+}
+
+/* Apply animation for continuous movement */
+@keyframes moveBubble {
+    0% { transform: translate(-50%, -50%); }
+    50% { transform: translate(100px, 100px); }
+    100% { transform: translate(200px, 200px); }
+}
+
+/* Apply animation to the bubble */
+.bubble.move {
+    animation: moveBubble 5s linear infinite;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+     /* Darker background color for the navbar */
+}
+
+.nav-right {
+    margin-left: auto;
+}
+
+.btn {
+    background-color: #555; /* Button background color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #777; /* Darker background color on hover */
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: -10px; /* Negative margin to counteract padding */
+}
+
+.card {
+    width: calc(33.33% - 20px); /* Adjust the width to fit 3 cards in a row */
+    background-color: #f2f1f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(127, 223, 24, 0.1);
+    margin: 10px; /* Adjust margin to create space between cards */
+}
+
+.card-content {
+    padding: 20px;
 }
 
 .container {
     width: 300px;
-    margin: 0 auto;
+    margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9); /* Lighter background color */
 }
+
 .form-group {
     margin-bottom: 15px;
 }
+
 .form-group label {
-    display: block;
     font-weight: bold;
-    margin-bottom: 5px;
 }
+
 .form-group input {
-    width: 100%;
-    padding: 5px;
+    width: calc(100% - 12px);
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 3px;
 }
+
 .form-group button {
     width: 100%;
     padding: 8px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #007bff;
+    color: #fff;
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-group button:hover {
+    background-color: #0056b3;
+}
+
+.message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #dc3545;
 }

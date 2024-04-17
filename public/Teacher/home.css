@@ -1,10 +1,35 @@
 body {
-    background-color: #222; /* Dark background color */
-    color: #00FF00; /* Green text color */
+    background-image: url('https://img.freepik.com/free-vector/computer-technology-isometric-icon-server-room-digital-device-set-element-design-pc-laptop_39422-1026.jpg?size=626&ext=jpg&ga=GA1.1.1738681452.1713296586&semt=sph'); /* Replace 'path_to_your_image.jpg' with the actual path to your image */
+    background-size: cover;
+    background-color: #716f6f; /* Dark background color */
+    color: #5e5c5c; /* Green text color */
     font-family: Arial, sans-serif; /* Font family */
     margin: 0;
     padding: 0;
     text-align: center;
+}
+.bubble {
+    width: 120px;
+    height: 120px;
+    background-color: rgba(242, 241, 245, 0.5); /* Transparent background color */
+    border-radius: 60%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 1s ease;
+}
+
+/* Apply animation for continuous movement */
+@keyframes moveBubble {
+    0% { transform: translate(-50%, -50%); }
+    50% { transform: translate(100px, 100px); }
+    100% { transform: translate(200px, 200px); }
+}
+
+/* Apply animation to the bubble */
+.bubble.move {
+    animation: moveBubble 5s linear infinite;
 }
 
 nav {
@@ -12,7 +37,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #333; /* Darker background color for the navbar */
+     /* Darker background color for the navbar */
 }
 
 .nav-right {
@@ -40,7 +65,7 @@ nav {
 
 .card {
     width: calc(33.33% - 20px); /* Adjust the width to fit 3 cards in a row */
-    background-color: #1b1825;
+    background-color: #f2f1f5;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(127, 223, 24, 0.1);
     margin: 10px; /* Adjust margin to create space between cards */

@@ -147,4 +147,72 @@ function fetchCoursesStudent(ID){
     }));
 }
 
-module.exports = {createCourse, JoinCourse, fetchCoursesTeacher, fetchCoursesStudent};
+function viewCourse(Course_ID)
+{
+    return new Promise((resolve, reject) => db.query(`SELECT * FROM Course WHERE Course_ID = ?`,
+    [Course_ID], (err, results) => {
+        if (err) {
+            console.error('Error querying Course Table:', err);
+            reject(err);
+        }
+        else
+        {   
+            resolve(results);
+        }
+    }));
+}
+
+function unenrollCourse(RollNo, Course_ID)
+{
+    return new Promise((resolve, reject) => {
+        const query = `DELETE FROM Enrollement WHERE RollNo = ${RollNo} AND Course_ID = ${Course_ID} AND Year = ${new Date().getFullYear()}`;
+        db.query(query, (err, results) => {
+            if (err) {
+                console.error('Error querying Enrollement table:', err);
+                reject(err);
+            }
+            else {
+                resolve(1);
+            }
+        });
+    });
+}
+
+function removeStudents(ID)
+{
+    return new Promise((resolve,reject) => db.query(`DELETE FROM Enrollement WHERE Course_ID = ${ID}`,(err,result) => {
+        if(err)
+        {
+            console.error('Error querying Student table:', err);
+            reject(err);
+        }
+        else
+        {
+            resolve(true);
+        }
+    }))
+}
+
+function deleteCourse(ID)
+{
+    return new Promise((resolve,reject) =>
+        
+
+        removeStudents(ID).then(() =>
+        {
+            db.query(`DELETE FROM Course WHERE Course_ID = ${ID}`,(err,result) => {
+            if(err)
+            {
+                console.error('Error querying Student table:', err);
+                reject(err);
+            }
+            else
+            {
+                resolve(true);
+            }
+        });
+    }))
+}
+
+module.exports = {createCourse, JoinCourse, fetchCoursesTeacher,
+    fetchCoursesStudent, viewCourse, unenrollCourse, deleteCourse};
