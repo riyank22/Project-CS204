@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {JoinCourse} = require('../queries/CourseQuery');
+const {JoinCourse, fetchCoursesStudent} = require('../queries/CourseQuery');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 
@@ -14,7 +14,11 @@ router.get('/JoinCourse', (req,res) => {
 });
 
 router.get('/Home', (req,res) => {
-    res.render('Student/Home')
+    fetchCoursesStudent(req.query.id).then(output => {
+        console.log(output);
+        res.render('Student/Home' , {
+            Courses: output});
+        });
 });
 
 router.post('/JoinCourse', (req,res) => {
@@ -28,7 +32,7 @@ router.post('/JoinCourse', (req,res) => {
         if(output == 1)
         {
             console.log("Course Joined");
-            res.redirect('/Student/Home');
+            res.redirect('/Student/Home?id='+id);
         }
         else if(output == 0)
         {

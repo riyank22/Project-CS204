@@ -25,13 +25,10 @@ router.post('/LogIn', (req,res) => {
 
                         if(output == "s")
                         {
-                            return res.render('Student/Home', {
-                                EmailID: EmailID
-                            })
+                            res.redirect('/Student/Home?id=' + output1);
                         }
                         else
                         {
-                            console.log("Sending")
                             res.redirect('/Teacher/Home?id=' + output1);
                         }
                     });

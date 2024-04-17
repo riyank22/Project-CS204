@@ -17,5 +17,18 @@
             <a href="/Student/JoinCourse" class="btn">Join Course</a>
         </div>
     </nav>
+
+    <div class="card-container">
+        {{#each Courses}}
+        <div class="card">
+            <div class="card-content">
+                <h2>{{this.Course_Code}}</h2>
+                <h2>{{this.Course_Name}}</h2>
+                <h2>{{this.Year}}</h2>
+                <a href="#" class="btn">Join</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
 </body>
 </html>

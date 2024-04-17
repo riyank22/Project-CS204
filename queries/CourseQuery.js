@@ -1,25 +1,59 @@
 const db = require("../db");
 
 function createCourse(CourseCode, CourseName, Teacher_ID) {
-    const currentDate = new Date();
 
-    // Get the current year
-    const currentYear = currentDate.getFullYear();
+    return new Promise((resolve, reject) => {
+        canCreate(CourseCode, CourseName).then(output => {
+            if(output)
+            {
+                const currentDate = new Date();
+    
+                // Get the current year
+                const currentYear = currentDate.getFullYear();
+    
+                const query = `INSERT INTO Course (Course_Code, Course_Name, Teacher_ID, Year, CanJoin)
+                VALUES ('${CourseCode}', '${CourseName}', ${Teacher_ID}, ${currentYear}, 'Y')`;
+                db.query(query, (err, results) => {
+                    if (err) {
+                        console.error('Error querying LogIn table:', err);
+                        reject(err);
+                    }
+                    else
+                    {
+                        console.log(results);
+                        resolve(true);
+                    }
+                });
+            }
+            else
+            {
+                resolve(-1); //indication the course already exists.
+            }
+        });
+    });
+}
 
-    const query = `INSERT INTO Course (Course_Code, Course_Name, Teacher_ID, Year, CanJoin)
-    VALUES ('${CourseCode}', '${CourseName}', ${Teacher_ID}, ${currentYear}, 'Y')`;
-    console.log(query);
+function canCreate(CourseCode)
+{
+    const query = `SELECT * FROM Course WHERE Course_Code = '${CourseCode}' AND Year = ${new Date().getFullYear()}`;
     return new Promise((resolve, reject) => db.query(query, (err, results) => {
         if (err) {
-            console.error('Error querying LogIn table:', err);
+            console.error('Error querying Course table:', err);
             reject(err);
         }
         else
         {
-            console.log(results);
-            resolve(true);
+            if(results.length > 0)
+            {
+                resolve(false);
+            }
+            else
+            {
+                resolve(true);
+            }
         }
     }));
+
 }
 
 function canJoin(Course_ID)
@@ -92,10 +126,25 @@ function fetchCoursesTeacher(ID){
         }
         else
         {   
+            resolve(results);
+        }
+    }));
+}
+
+function fetchCoursesStudent(ID){
+    return new Promise((resolve, reject) => db.query(`SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID
+    where RollNo = '${ID}'`,
+    (err, results) => {
+        if (err) {
+            console.error('Error querying Course Table:', err);
+            reject(err);
+        }
+        else
+        {   
             console.log(results);
             resolve(results);
         }
     }));
 }
 
-module.exports = {createCourse, JoinCourse, fetchCoursesTeacher};
+module.exports = {createCourse, JoinCourse, fetchCoursesTeacher, fetchCoursesStudent};

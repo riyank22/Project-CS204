@@ -50,16 +50,16 @@ router.get('/Home', (req,res) => {
 
 router.post('/CreateCourse', (req,res) => {
     const jwtToken = req.cookies.token;
-    console.log(jwtToken);
     const {id} = jwt.verify(jwtToken, 'alpha');
-    console.log(id);
     const {Course_Code, Course_Name} = req.body;
-    console.log(Course_Code);
-    console.log(Course_Name);
     createCourse(Course_Code, Course_Name, id).then(output => {
-        if(output)
+        if(output == 1)
         {
             res.redirect('/Teacher/Home?id='+id);
+        }
+        else if(output == -1)
+        {
+            res.redirect('/Teacher/CreateCourse?Message=Course already exists');
         }
         else
         {
