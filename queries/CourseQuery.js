@@ -195,8 +195,7 @@ function removeStudents(ID)
 
 function deleteCourse(ID)
 {
-    return new Promise((resolve,reject) =>
-        
+    return new Promise((resolve,reject) =>        
 
         removeStudents(ID).then(() =>
         {
@@ -214,5 +213,24 @@ function deleteCourse(ID)
     }))
 }
 
+function getStudents(ID)
+{
+    return new Promise((resolve,reject) =>        
+    {
+        const query = `SELECT s.FName, s.LName, s.RollNo FROM student s JOIN Enrollement e ON s.RollNo = e.RollNo WHERE e.Course_ID = ${ID}`;
+        db.query(query,(err,result) => {
+        if(err)
+        {
+            console.error('Error querying Student table:', err);
+            reject(err);
+        }
+        else
+        {
+            resolve(result);
+        }
+        })
+    });
+};
+
 module.exports = {createCourse, JoinCourse, fetchCoursesTeacher,
-    fetchCoursesStudent, viewCourse, unenrollCourse, deleteCourse};
+    fetchCoursesStudent, viewCourse, unenrollCourse, deleteCourse, getStudents};

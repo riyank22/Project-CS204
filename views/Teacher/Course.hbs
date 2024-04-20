@@ -35,12 +35,23 @@
             <h1>Group Management System</h1>
         </div>
         <div class="nav-right">
-            <a href="#"class="btn">Assign Project</a>
+            <a href="/Teacher/CreateProject?id={{Course.Course_ID}}"class="btn">Assign Project</a>
             <a href = "/Teacher/DeleteCourse?Course_ID={{Course.Course_ID}}" class="btn">Delete Course</a>
         </div>
     </nav>
 
     <h1>{{Course.Course_Code}} {{Course.Course_Name}}</h1>
     <h2> Course ID {{Course.Course_ID}}</h2>
+
+    <div class="card-container">
+        {{#each Projects}}
+        <div class="card">
+            <div class="card-content">
+                <h2>{{this.Project_Name}}</h2>
+                <h2>{{this.Project_ID}}</h2>
+                <h2>{{this.Last_Date}}</h2>
+            </div>
+        </div>
+        {{/each}}
 </body>
 </html>

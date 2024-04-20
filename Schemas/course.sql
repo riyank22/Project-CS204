@@ -24,3 +24,15 @@ Insert into Enrollement values('202251127', 1);
 
 SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID
 where RollNo = '202251127' and Year = 2023;
+
+create table project(
+    Course_ID int,
+    Project_ID int PRIMARY KEY AUTO_INCREMENT,
+    Project_Name varchar(20),
+    Max_Students int NOT NULL,
+    Min_Students int NOT NULL,
+    Last_Date date NOT NULL,
+    FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID),
+    check( Min_Students <= Max_Students),
+    check (Min_Students > 0)
+);

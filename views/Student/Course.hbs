@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>{{Course.Course_Name}}</title>
     <link rel="stylesheet" href="/Student/home.css">
 </head>
 <body>
@@ -41,5 +41,30 @@
 
     <h1>{{Course.Course_Code}} {{Course.Course_Name}}</h1>
     <h2> Course ID {{Course.Course_ID}}</h2>
+
+    <div class="card-container">
+        {{#each Projects}}
+        <div class="card">
+            <div class="card-content">
+                <h2>{{this.Project_Name}}</h2>
+                <h2>{{this.Project_ID}}</h2>
+                <h2>{{this.Last_Date}}</h2>
+                <a href="/Student/Project?id={{this.Project_ID}}" class="btn">View</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <div class="card-container">
+        {{#each Students}}
+        <div class="card">
+            <div class="card-content">
+                <h2>{{this.RollNo}}</h2>
+                <h2>{{this.FName}}</h2>
+                <h2>{{this.LName}}</h2>
+            </div>
+        </div>
+        {{/each}}
+    </div>
 </body>
 </html>
