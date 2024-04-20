@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Team</title>
+    <link rel="stylesheet" href="/Student/style.css">
+</head>
+<body>
+    <div class="bubble"></div>
+    <div class="bubble" style="top: 30%; left: 70%;"></div>
+    <div class="bubble" style="top: 70%; left: 30%;"></div>
+    <div class="bubble" style="top: 10%; left: 40%;"></div>
+    <div class="bubble" style="top: 80%; left: 80%;"></div>
+    <div class="bubble" style="top: 50%; left: 20%;"></div>
+    <div class="bubble" style="top: 40%; left: 60%;"></div>
+    <div class="bubble" style="top: 20%; left: 90%;"></div>
+    <div class="bubble" style="top: 90%; left: 10%;"></div>
+    <div class="bubble" style="top: 60%; left: 50%;"></div>
+    
+
+    <script>
+        // JavaScript to add the 'move' class to the bubble divs after the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach((bubble, index) => {
+                setTimeout(() => {
+                    bubble.classList.add('move');
+                }, index * 500); // Delay each bubble's animation start by 500 milliseconds
+            });
+        });
+    </script>
+    <div class="container">
+        <h2>Create Team</h2>
+       <form action="/Student/Project/CreateTeam" method="POST">
+            <div class="form-group"> 
+                <label for="Project_ID">Project ID:</label>
+                <input type="text" id="Project_ID" name="Project_ID" value = "{{Project_ID}}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="Team_Name">Team Name:</label>
+                <input type="text" id="Team_Name" name="Team_Name" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Create Team</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</body>
+</html>
