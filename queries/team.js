@@ -36,7 +36,7 @@ function createTeam(Project_ID, RollNo, Team_Name)
 
 function getTeamInfo(Team_ID)
 {
-    const query = `SELECT * FROM Team_Member JOIN student on student.RollNo = Team_Member.RollNo join Team on Team.id = Team_Member.Team_ID WHERE Team_ID = ${Team_ID} ORDER BY role`
+    const query = `SELECT * FROM Team_Member JOIN student on student.RollNo = Team_Member.RollNo join Team on Team.id = Team_Member.Team_ID WHERE Team_ID = ${Team_ID} ORDER BY role DESC`
     return new Promise((resolve, reject) => db.query(query, (err, results) => {
         if (err) {
             console.error('Error querying group table:', err);
@@ -70,7 +70,7 @@ function getTeamID(Project_ID, RollNo)
 
 function viewTeams(Project_ID)
 {
-    const query = `SELECT * FROM Team_Member JOIN Team_Member.Team_ID = Team.Team_ID WHERE Project_ID = ${Project_ID}`
+    const query = `SELECT * FROM Team WHERE Project_ID = ${Project_ID};`
     return new Promise((resolve, reject) => db.query(query,
     (err, results) => {
         if (err) {
@@ -248,12 +248,31 @@ function leaveTeam(Team_ID, RollNo)
     });
 }
 
+function getCourseID(Project_ID)
+{
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT Course_ID FROM project WHERE Project_ID = ?`,[Project_ID], (err, results) => {
+            if (err) {
+                console.error('Error querying group table:', err);
+                reject(err);
+            }
+            else
+            {
+                resolve(results[0].Course_ID);
+            }
+        });
+    });
+}
+
 function getNonTeamStudent(Project_ID)
 {
     return new Promise((resolve, reject) => {
-        const query = `SELECT FName, LName, s.RollNo from student s
-        join Enrollement e on e.RollNo = s.RollNo
-        where s.RollNo not in (SELECT RollNo from Team_Member tm
+        getCourseID(Project_ID).then(Course_ID => {
+        const query = `SELECT e.RollNo,FName, LName from Enrollement e
+        join student s on s.RollNo = e.RollNo
+        where Course_ID = ${Course_ID}
+        and e.RollNo not in (
+        SELECT RollNo from Team_Member tm
         join Team t on t.id = tm.Team_ID
         where Project_ID = ${Project_ID});`
         db.query(query, (err, results) => {
@@ -267,71 +286,8 @@ function getNonTeamStudent(Project_ID)
                 resolve(results);
             }
         });
-    });
-}
-
-function createRequestNotificaiton(Project, RollNo, id)
-{
-    return new Promise((resolve, reject) => {
-        getTeamID(Project, RollNo).then(Team_ID => {
-            db.query(`INSERT INTO request (Team_ID, Sender_ID) VALUES (?, ?)`,[Team_ID, id], (err, results) => {
-                if (err) {
-                    console.error('Error querying group table:', err);
-                    reject(err);
-                }
-                else
-                {
-                    resolve(true);
-                }
-            });
-        });
-    });
-}
-
-function createInviteNotification(Project_ID, RollNo, id)
-{
-    return new Promise((resolve, reject) => {
-        getTeamID(Project_ID, id).then(Team_ID => {
-            db.query(`INSERT INTO invite (Team_ID, Receiver_ID) VALUES (?, ?)`,[Team_ID, RollNo], (err, results) => {
-                if (err) {
-                    console.error('Error querying group table:', err);
-                    reject(err);
-                }
-                else
-                {
-                    resolve(true);
-                }
-            });
-        });
-    });
-}
-
-function deleteNotification(RollNo)
-{
-    return new Promise((resolve, reject) => {
-        const query1 = `DELETE FROM request WHERE Sender_ID = ${RollNo}`;
-        const query2 = `DELETE FROM invite WHERE Receiver_ID = ${RollNo}`;
-        db.query(query1, (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else
-            {
-                db.query(query2, (err, results) => {
-                    if (err) {
-                        console.error('Error querying group table:', err);
-                        reject(err);
-                    }
-                    else
-                    {
-                        resolve(true);
-                    }
-                });
-            }
-        });
-    });
+    })});
 }
 
 module.exports = {inTeam, createTeam, getTeamInfo, viewTeams,joinTeam, getAllTeamsInfo,
-    leaveTeam, deleteTeam, getNonTeamStudent, createRequestNotificaiton, createInviteNotification, deleteNotification};
+    leaveTeam, deleteTeam, getNonTeamStudent, getProjectID}

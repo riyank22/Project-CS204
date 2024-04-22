@@ -5,8 +5,9 @@ const router = express.Router();
 const cookieParser = require('cookie-parser');
 const {getProjects, getProjectDetails} = require('../queries/ProjectQuery');
 const {createTeam, inTeam, getTeamInfo, getAllTeamsInfo,
-    joinTeam, leaveTeam, deleteTeam, getNonTeamStudent,
-    createInviteNotification,createRequestNotificaiton,deleteNotification} = require('../queries/team');
+    joinTeam, leaveTeam, deleteTeam, getNonTeamStudent} = require('../queries/team');
+
+const {createInviteNotification,createRequestNotificaiton,deleteNotification} = require('../queries/notification'); 
 
 router.use(cookieParser());
 
@@ -207,7 +208,7 @@ router.get('/Project/ViewPotentialMembers', (req,res) => {
     });
 });
 
-router.get('/Project/Invite', (req,res) => {
+router.get('/Project/GenerateInvite', (req,res) => {
     const Project_ID = req.query.Project_ID;
     const RollNo = req.query.RollNo;
     const {id} = jwt.verify(req.cookies.token, 'alpha');
@@ -222,6 +223,9 @@ router.get('/Project/Invite', (req,res) => {
             console.log(output);
         }
     });
+});
+
+router.get('/Project/ViewInvites', (req,res) => {
 });
 
 module.exports = router;

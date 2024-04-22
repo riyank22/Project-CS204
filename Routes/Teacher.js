@@ -2,7 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const {fetchProfileTeacher} = require('../queries/profile');
 const {createCourse, fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
-const {createProject, getProjects} = require('../queries/ProjectQuery');
+const {createProject, getProjects, getProjectDetails} = require('../queries/ProjectQuery');
+const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 
@@ -84,6 +85,46 @@ router.get('/Course', (req,res) => {
     });
 });
 
+router.get('/ViewCourseParticipants', (req,res) => {
+    const Course_ID = req.query.Course_ID;
+    getStudents(Course_ID).then(output => {
+        res.render('Teacher/ViewCourseParticipants', {
+            Course_ID: Course_ID,
+            Students: output
+        });
+    });
+});
+
+router.get('/ViewNonTeamStudents', (req,res) => {
+    const Project_ID = req.query.Project_ID;
+    getNonTeamStudent(Project_ID).then(output => {
+        res.render('Teacher/Projects/ViewNonTeamStudents', {
+            Project_ID: Project_ID,
+            Students: output
+        });
+    });
+});
+
+router.get('/ViewTeams', (req,res) => {
+    const Project_ID = req.query.Project_ID;
+    viewTeams(Project_ID).then(output => {
+        res.render('Teacher/Projects/ViewTeams', {
+            Project_ID: Project_ID,
+            Teams: output
+        });
+    });
+});
+
+router.get('/ViewTeamMembers', (req,res) => {
+    const Team_ID = req.query.Team_ID;
+    getTeamInfo(Team_ID).then(output => {
+        res.render('Teacher/Projects/ViewTeamMembers', {
+            Team: output,
+            Team_Name: output[0].Team_Name
+        });
+    });
+});
+
 router.get('/DeleteCourse', (req,res) => {
     const Course_Id = req.query.Course_ID;
     const token = req.cookies.token;
@@ -122,6 +163,15 @@ router.post('/CreateProject', (req,res) => {
             console.log(output);
         }
     });    
+});
+
+router.get('/ViewProject', (req,res) => {
+    const Project_ID = req.query.Project_ID;
+    getProjectDetails(Project_ID).then(output => {
+        res.render('Teacher/ViewProject', {
+            Project: output
+        });
+    });
 });
 
 module.exports = router;

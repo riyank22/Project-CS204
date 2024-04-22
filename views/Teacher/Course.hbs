@@ -36,6 +36,7 @@
         </div>
         <div class="nav-right">
             <a href="/Teacher/CreateProject?id={{Course.Course_ID}}"class="btn">Assign Project</a>
+            <a href="/Teacher/ViewCourseParticipants?Course_ID={{Course.Course_ID}}" class="btn">View Participants</a>
             <a href = "/Teacher/DeleteCourse?Course_ID={{Course.Course_ID}}" class="btn">Delete Course</a>
         </div>
     </nav>
@@ -50,8 +51,10 @@
                 <h2>{{this.Project_Name}}</h2>
                 <h2>{{this.Project_ID}}</h2>
                 <h2>{{this.Last_Date}}</h2>
+                <a href="/Teacher/ViewProject?Project_ID={{this.Project_ID}}" class="btn">View</a>
             </div>
         </div>
         {{/each}}
+    </div>
 </body>
 </html>

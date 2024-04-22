@@ -12,6 +12,7 @@ create table student(
 
 Insert into student values('202251127@iiitvadodara.ac.in','202251127','Riyank','Singh',2022,'M','CSE');  
 Insert into student values('202251125@iiitvadodara.ac.in','202251125','Shrijan','Shresth',2022,'M','CSE');
+Insert into student values('202251136@iiitvadodara.ac.in','202251136','Sudhir','Nagar',2022,'M','CSE');
 
 create table teacher(
     EmailAddress varchar(40),

@@ -34,6 +34,7 @@ function getProjects(Course_ID)
 
 function getProjectDetails(Project_ID)
 {
+    console.log(Project_ID)
     return new Promise((resolve, reject) => db.query(`SELECT * FROM project WHERE Project_ID = ?`,
     [Project_ID], (err, results) => {
         if (err) {
