@@ -50,4 +50,61 @@ function getProjectDetails(Project_ID)
 
 }
 
-module.exports = {createProject, getProjects, getProjectDetails};
+function deleteProject(Project_ID)
+{
+    const query1 = `SELECT id from Team where Project_ID = ${Project_ID}`;
+    const query2 = `DELETE FROM Team_Member WHERE Team_ID IN (${query1})`;
+    const query3 = `DELETE FROM Team WHERE Project_ID = ${Project_ID}`;
+    const query4 = `DELETE FROM project WHERE Project_ID = ${Project_ID}`;
+
+    return new Promise((resolve, reject) => db.query(query1, (err, results) => {
+        if (err) {
+            console.error('Error querying Project table:', err);
+            reject(err);
+        }
+        else {
+            db.query(query2, (err, results) => {
+                if (err) {
+                    console.error('Error querying Project table:', err);
+                    reject(err);
+                }
+                else {
+                    db.query(query3, (err, results) => {
+                        if (err) {
+                            console.error('Error querying Project table:', err);
+                            reject(err);
+                        }
+                        else {
+                            db.query(query4, (err, results) => {
+                                if (err) {
+                                    console.error('Error querying Project table:', err);
+                                    reject(err);
+                                }
+                                else {
+                                    resolve(1);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }));
+}
+
+function getCourseID(Project_ID)
+{
+    return new Promise((resolve, reject) => db.query(`SELECT Course_ID FROM project WHERE Project_ID = ?`,[Project_ID], (err, results) => {
+        if (err) {
+            console.error('Error querying group table:', err);
+            reject(err);
+        }
+        else
+        {
+            resolve(results[0].Course_ID);
+        }
+    }));
+
+}
+
+module.exports = {createProject, getProjects, getProjectDetails,deleteProject,getCourseID};

@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const {fetchProfileTeacher} = require('../queries/profile');
 const {createCourse, fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
-const {createProject, getProjects, getProjectDetails} = require('../queries/ProjectQuery');
+const {createProject, getProjects, getProjectDetails, deleteProject, getCourseID} = require('../queries/ProjectQuery');
 const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
@@ -172,6 +172,24 @@ router.get('/ViewProject', (req,res) => {
             Project: output
         });
     });
+});
+
+router.get('/Project/DeleteProject', (req,res) => {
+    const Project_ID = req.query.Project_ID;
+    
+    getCourseID(Project_ID).then(Course_ID => {
+        deleteProject(Project_ID).then(output => {
+            if(output == 1)
+            {
+                res.redirect('/Teacher/Course?id='+Course_ID);
+            }
+            else
+            {
+                console.log(output);
+            }
+        });
+    });
+    
 });
 
 module.exports = router;

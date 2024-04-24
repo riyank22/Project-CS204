@@ -195,22 +195,73 @@ function removeStudents(ID)
 
 function deleteCourse(ID)
 {
+    const query0 = `SELECT Project_ID FROM project WHERE Course_ID = ${ID}`;
+    const query1 = `SELECT id from Team where Project_ID IN (${query0})`;
+    const query2 = `DELETE FROM Team_Member WHERE Team_ID IN (${query1})`;
+    const query3 = `DELETE FROM Team WHERE id IN (${query0})`;
+    const query4 = `DELETE FROM project WHERE Course_ID = ${ID}`;
+    const query5 = `DELETE FROM Enrollement WHERE Course_ID = ${ID}`;
+    const query6 = `DELETE FROM Course WHERE Course_ID = ${ID}`;
     return new Promise((resolve,reject) =>        
-
-        removeStudents(ID).then(() =>
-        {
-            db.query(`DELETE FROM Course WHERE Course_ID = ${ID}`,(err,result) => {
-            if(err)
-            {
-                console.error('Error querying Student table:', err);
+    {
+        db.query(query0, (err, results) => {
+            if (err) {
+                console.error('Error querying Project table:', err);
                 reject(err);
             }
-            else
-            {
-                resolve(true);
+            else {
+                db.query(query1, (err, results) => {
+                    if (err) {
+                        console.error('Error querying Project table:', err);
+                        reject(err);
+                    }
+                    else {
+                        db.query(query2, (err, results) => {
+                            if (err) {
+                                console.error('Error querying Project table:', err);
+                                reject(err);
+                            }
+                            else {
+                                db.query(query3, (err, results) => {
+                                    if (err) {
+                                        console.error('Error querying Project table:', err);
+                                        reject(err);
+                                    }
+                                    else {
+                                        db.query(query4, (err, results) => {
+                                            if (err) {
+                                                console.error('Error querying Project table:', err);
+                                                reject(err);
+                                            }
+                                            else {
+                                                db.query(query5, (err, results) => {
+                                                    if (err) {
+                                                        console.error('Error querying Project table:', err);
+                                                        reject(err);
+                                                    }
+                                                    else {
+                                                        db.query(query6, (err, results) => {
+                                                            if (err) {
+                                                                console.error('Error querying Project table:', err);
+                                                                reject(err);
+                                                            }
+                                                            else {
+                                                                resolve(1);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         });
-    }))
+    });    
 }
 
 function getStudents(ID)
