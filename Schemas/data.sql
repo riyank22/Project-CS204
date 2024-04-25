@@ -26,3 +26,7 @@ create table teacher(
 )
 
 Insert into teacher values('test', '1', 'Teacher', '1', 'F', 2015);
+
+Insert into student values('202252301@iiitvadodara.ac.in','202252301','Abhyuday','Tomar',2022,'M','IT');
+Insert into student values('202252308@iiitvadodara.ac.in','202252308','Ayush','Yadav',2022,'M','IT');
+Insert into student values('202252310@iiitvadodara.ac.in','202252310','Yash','Bhambhani',2022,'M','IT');

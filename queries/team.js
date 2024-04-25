@@ -290,4 +290,4 @@ function getNonTeamStudent(Project_ID)
 }
 
 module.exports = {inTeam, createTeam, getTeamInfo, viewTeams,joinTeam, getAllTeamsInfo,
-    leaveTeam, deleteTeam, getNonTeamStudent, getProjectID}
+    leaveTeam, deleteTeam, getNonTeamStudent, getProjectID, getTeamID}

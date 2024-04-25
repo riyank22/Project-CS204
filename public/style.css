@@ -12,8 +12,8 @@ body {
     background-repeat: no-repeat; /* Prevent background image from repeating */
 }
 .bubble {
-    width: 140px;
-    height: 140px;
+    width: 60px;
+    height: 60px;
     background-color: rgba(242, 241, 245, 0.5); /* Transparent background color */
     border-radius: 50%;
     position: absolute;

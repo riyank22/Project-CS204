@@ -1,5 +1,6 @@
 const db = require("../db");
 const{getProjectID} = require('./team');
+const{joinTeam, getTeamID} = require('./team')
 
 function createRequestNotificaiton(Project, RollNo, id)
 {
@@ -23,14 +24,14 @@ function createInviteNotification(Project_ID, RollNo, id)
 {
     return new Promise((resolve, reject) => {
         getTeamID(Project_ID, id).then(Team_ID => {
-            db.query(`INSERT INTO invite (Team_ID, Receiver_ID) VALUES (?, ?)`,[Team_ID, RollNo], (err, results) => {
-                if (err) {
-                    console.error('Error querying group table:', err);
-                    reject(err);
+            joinTeam(Team_ID, RollNo).then(output => {
+                if(output == Project_ID)
+                {
+                   resolve(true);
                 }
                 else
                 {
-                    resolve(true);
+                    resolve(false);
                 }
             });
         });
