@@ -1,17 +1,49 @@
 body {
-    background-image: url('https://img.freepik.com/free-vector/computer-technology-isometric-icon-server-room-digital-device-set-element-design-pc-laptop_39422-1026.jpg?size=626&ext=jpg&ga=GA1.1.1738681452.1713296586&semt=sph'); /* Replace 'path_to_your_image.jpg' with the actual path to your image */
+    background-image: url('https://img.freepik.com/free-vector/computer-technology-isometric-icon-server-room-digital-device-set-element-design-pc-laptop_39422-1026.jpg?size=626&ext=jpg&ga=GA1.1.1738681452.1713296586&semt=sph');
+    /* Replace 'path_to_your_image.jpg' with the actual path to your image */
     background-size: cover;
-    background-color: #716f6f; /* Dark background color */
-    color: #5e5c5c; /* Green text color */
-    font-family: Arial, sans-serif; /* Font family */
+    background-color: #716f6f;
+    /* Dark background color */
+    color: #5e5c5c;
+    /* Green text color */
+    font-family: Arial, sans-serif;
+    /* Font family */
     margin: 0;
     padding: 0;
     text-align: center;
 }
+
+.card-container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.card1 {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-content1 {
+    padding: 20px;
+    text-align: center;
+}
+
+.card1 h2 {
+    margin: 5px 0;
+    font-size: px;
+    font-weight: bold;
+}
+
 .bubble {
-    width: 120px;
-    height: 120px;
-    background-color: rgba(242, 241, 245, 0.5); /* Transparent background color */
+    width: 60px;
+    height: 60px;
+    background-color: rgba(242, 241, 245, 0.5);
+    /* Transparent background color */
     border-radius: 60%;
     position: absolute;
     top: 50%;
@@ -22,9 +54,17 @@ body {
 
 /* Apply animation for continuous movement */
 @keyframes moveBubble {
-    0% { transform: translate(-50%, -50%); }
-    50% { transform: translate(100px, 100px); }
-    100% { transform: translate(200px, 200px); }
+    0% {
+        transform: translate(-50%, -50%);
+    }
+
+    50% {
+        transform: translate(100px, 100px);
+    }
+
+    100% {
+        transform: translate(200px, 200px);
+    }
 }
 
 /* Apply animation to the bubble */
@@ -37,14 +77,16 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-     /* Darker background color for the navbar */
+    /* Darker background color for the navbar */
 }
 
 .nav-right {
     margin-left: auto;
 }
+
 .btn {
-    background-color: #555; /* Button background color */
+    background-color: #555;
+    /* Button background color */
     color: white;
     padding: 10px 20px;
     text-decoration: none;
@@ -52,8 +94,27 @@ nav {
     border-radius: 5px;
     cursor: pointer;
 }
+
 .btn:hover {
-    background-color: #777; /* Darker background color on hover */
+    background-color: #777;
+    /* Darker background color on hover */
+}
+
+.logo {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.logo h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4292e7;
+    /* Blue background color */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: inline-block;
 }
 
 .card-container {

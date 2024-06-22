@@ -1,19 +1,18 @@
-const db = require("../db");
+const dbQuery = require("../db");
 
-function fetchProfileTeacher(ID) {
-    return new Promise((resolve, reject) => db.query(`SELECT Teacher_ID, Teacher_FName, Teacher_LName,
-    EmailAddress FROM teacher WHERE Teacher_ID = ?`
-    [ID], (err, results) => {
-        if (err) {
-            console.error('Error querying LogIn table:', err);
-            reject(err);
-        }
-        else
-        {
-            console.log(results[0]);
-            resolve(results[0]);
-        }
-    }));
+async function fetchProfileTeacher(userID)
+{
+    const params = [userID];
+    const result = await dbQuery(`SELECT Teacher_FName, Teacher_LName, emailID, gender, Joining_Year FROM teacher WHERE userId = ?`, params);
+    if(result.length === 1)
+    {
+        result[0].status = 200;
+        return result[0];
+    }
+    else
+    {
+        return {status: 404};
+    }
 }
 
 function fetchProfileStudent(ID) {

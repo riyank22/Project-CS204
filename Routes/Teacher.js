@@ -1,43 +1,19 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {fetchProfileTeacher} = require('../queries/profile');
 const {createCourse, fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
 const {createProject, getProjects, getProjectDetails, deleteProject, getCourseID} = require('../queries/ProjectQuery');
 const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
-const router = express.Router();
+
+const { fetchProfile } = require('../Controllers/Teacher/homeC');
+const { authenticateToken } = require('../Middlewares/jwtTokenVerifer');
 const cookieParser = require('cookie-parser');
+const router = express.Router();
 
 router.use(cookieParser());
 
+router.use(authenticateToken);
 
-router.get('/ProfilePage', (req,res) => {
-
-    const jwtToken = req.cookies.token;
-
-    console.log(req);
-    
-    const {id} = jwt.verify(req.cookies.token, 'alpha');
-
-    console.log(id);    
-    
-    fetchProfileTeacher(id).then(output => 
-        {
-            console.log(output);
-            if(output.length == 1)
-            {
-                return res.render('/Teacher/ProfilePage', {
-                    Teacher_FName: output.Teacher_FName,
-                    Teacher_LName: output.Teacher_LName,
-                    EmailAddress: output.EmailAddress,
-                    Teacher_ID: output.Teacher_ID
-                })
-            }
-            else
-            {
-                console.log(output);
-            }
-        })
-} );
+router.route('/profile').get(fetchProfile);
 
 router.get('/CreateCourse', (req,res) => {
     res.render('Teacher/CreateCourse');

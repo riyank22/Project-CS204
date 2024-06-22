@@ -1,5 +1,19 @@
 const db = require("../db");
 
+async function fetchCoursesTeacher(userID){
+    return new Promise((resolve, reject) => db.query(`SELECT * FROM Course WHERE Teacher_ID = ?`,
+    [ID], (err, results) => {
+        if (err) {
+            console.error('Error querying Course Table:', err);
+            reject(err);
+        }
+        else
+        {   
+            resolve(results);
+        }
+    }));
+}
+
 function createCourse(CourseCode, CourseName, Teacher_ID) {
 
     return new Promise((resolve, reject) => {
@@ -117,19 +131,6 @@ function JoinCourse(RollNo, Course_ID)
     })
 }
 
-function fetchCoursesTeacher(ID){
-    return new Promise((resolve, reject) => db.query(`SELECT * FROM Course WHERE Teacher_ID = ?`,
-    [ID], (err, results) => {
-        if (err) {
-            console.error('Error querying Course Table:', err);
-            reject(err);
-        }
-        else
-        {   
-            resolve(results);
-        }
-    }));
-}
 
 function fetchCoursesStudent(ID){
     return new Promise((resolve, reject) => db.query(`SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID

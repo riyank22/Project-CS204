@@ -1,20 +1,35 @@
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 
-// Create a connection to the MySQL database
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'project'
+// Create a connection pool
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '1234',
+  database: 'project',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// Connect to the database
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL database:', err);
-        return;
-    }
-});
+// // Create a connection to the MySQL database
+// const connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: '1234',
+//     database: 'project'
+// });
+
+// async function query (query)
+// {
+//     try{
+//         const result = await connection.query(query);
+//         return result;
+//     }
+//     catch (error)
+//     {
+//         console.log("error quering database\n" + error);
+//     }
+// }
 
 // Close the database connection
 // connection.end((err) => {
@@ -25,4 +40,26 @@ connection.connect((err) => {
 //     console.log('MySQL database connection closed');
 // });
 
-module.exports = connection;
+async function queryDatabase(queryString, params) {
+    let connection;
+    try {
+      // Get a connection from the pool
+      connection = await pool.getConnection();
+  
+      // Execute the query with parameters
+      const [rows, fields] = await connection.execute(queryString, params);
+  
+      // Return the query results
+      return rows;
+    } catch (error) {
+      console.error('Error executing query:', error);
+      return {status:500}
+    } finally {
+      // Release the connection back to the pool
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+module.exports = queryDatabase;

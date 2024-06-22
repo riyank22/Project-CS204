@@ -1,70 +1,71 @@
-const db = require("../db");
+const dbQuery = require("../db");
+// const db = require("../db").connection;
 
-function authorizeUser(EmailID, pass) {
-    return new Promise((resolve, reject) => db.query(`SELECT * FROM LogIn WHERE EmailAddress = ? AND password = ?`,
-    [EmailID,pass], (err, results) => {
-        if (err) {
-            console.error('Error querying LogIn table:', err);
-            reject(err);
-        }
+async function authorizeUser(emailID, password) {
+    const params = [emailID];
+    const result1 = await dbQuery(`SELECT * FROM login WHERE emailID = ?`, params);
 
-        else if(results.length == 1)
-        {
-            resolve(results[0].role);
+    if (result1.length === 1) {
+        const params = [emailID, password];
+        const result2 = await dbQuery(`SELECT * FROM login WHERE emailID = ? AND password = ?`, params);
+        if (result2.length === 1) {
+            result2[0].status = 200;
+            return result2[0];
         }
-        else
-        {
-            resolve("n");
+        else {
+            console.log(401)
+            return { status: 401 };
         }
-    }));
-}
+    }
+    else {
+        console.log(404)
+        return { status: 404 };
+    }
+};
 
-function updatePassword(EmailID,newPassword) {
-    return new Promise((resolve, reject) => db.query(`UPDATE LogIn SET password = ? WHERE EmailAddress = ?`,
-    [newPassword,EmailID], (err, results) => {
-        if (err) {
-            console.error('Error querying LogIn table:', err);
-            reject(err);
-        }
-        else
-        {
-            resolve(true);
-        }
-    }));
-}
 
-function getRoll(EmailId, Roll)
-{
-    if(Roll == "s")
-    {
-        console.log("Gettting RollNo");
-        return new Promise((resolve,reject) => db.query(`SELECT RollNo from student join LogIn on student.EmailAddress = LogIn.EmailAddress where student.EmailAddress = ?`,
-        [EmailId],(err, result) => {
-            if (err) {
-                console.error('Error querying Student table:', err);
-                reject(err);
-            }
-            else
-            {
-                resolve(result[0].RollNo);
-            }
-        })) 
+async function getUserID(emailID, userType) {
+    if (userType === 's') {
+        const params = [emailID]
+        const result = await dbQuery(`SELECT userID from student join login on student.emailID = login.emailID where student.emailID = ?`, params);
+
+        if (result.length === 1) {
+            result[0].status = 200;
+            return result[0];
+        }
+        else {
+            console.log(404 + "User not found")
+            return { status: 404 };
+        }
     }
 
-    else
-    {
-        return new Promise((resolve,reject) => db.query(`SELECT Teacher_ID from teacher join LogIn on teacher.EmailAddress = LogIn.EmailAddress where teacher.EmailAddress = ?`,
-        [EmailId],(err, result) => {
-            if (err) {
-                console.error('Error querying LogIn table:', err);
-                reject(err);
-            }
-            else
-            {
-                resolve(result[0].Teacher_ID);
-            }
-        })) 
+    else if (userType === 't') {
+        const params = [emailID]
+        const result = await dbQuery(`SELECT userID from teacher join login on teacher.emailID = login.emailID where teacher.emailID = ?`, params);
+        if (result.length === 1) {
+            result[0].status = 200;
+            return result[0];
+        }
+        else {
+            console.log(404 + "User not found")
+            return { status: 404 };
+        }
+    }
+    else {
+        return { status: 400 };
     }
 }
 
-module.exports = {authorizeUser,updatePassword, getRoll};
+async function updatePassword(emailID, newPassword) {
+    try {
+        const params = [newPassword, emailID];
+        await dbQuery(`UPDATE login SET password = ? WHERE emailID = ?`, params);
+        return { status: 200 }
+    }
+    catch (err) {
+        console.log(err)
+        return { stack: 500 }
+    }
+}
+
+module.exports = { authorizeUser, updatePassword, getUserID };

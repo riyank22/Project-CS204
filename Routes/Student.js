@@ -84,13 +84,13 @@ router.get('/Unenroll', (req,res) => {
 
 router.get('/Project', (req,res)=>{
     const {id} = jwt.verify(req.cookies.token, 'alpha');
+    console.log(req.cookies.token);
     const Project_ID = req.query.id;
     getProjectDetails(Project_ID).then(output => {
         inTeam(Project_ID, id).then(team => {
             if(team != -1)
             {
                 getTeamInfo(team).then(teamInfo => {
-                    console.log(teamInfo);
                     if(id == teamInfo[0].Team_Lead)
                     {
                         res.render('Student/Project/Project-Team-L', {

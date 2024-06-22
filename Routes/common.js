@@ -2,27 +2,22 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
-
+console.log("in a")
 // Route for serving the login page
 router.get('/', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'FrontEnd/LogIn', 'LogIn.html'));
+    // res.end("Landing Page");
     res.render("LogIn");
 });
+
+
 
 // Route for serving the home page
 router.get('/Home', (req, res) => {
     res.render("");
 });
 
-// Route for serving the home page
-router.get('/ChangePassword', (req, res) => {
-    res.render("ChangePassword");
-});
+// router.use(authenticateToken);
 
-//Router for logOut Page
-router.get('/LogOut', (req, res) => {
-    res.clearCookie('token');
-    res.render("LogOut");
-});
+// router.route('/profile').get();
 
 module.exports = router;
