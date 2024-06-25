@@ -1,50 +1,27 @@
-const db = require("../db");
+const dbQuery = require("../db");
 
 async function fetchCoursesTeacher(userID){
-    return new Promise((resolve, reject) => db.query(`SELECT * FROM Course WHERE Teacher_ID = ?`,
-    [ID], (err, results) => {
-        if (err) {
-            console.error('Error querying Course Table:', err);
-            reject(err);
-        }
-        else
-        {   
-            resolve(results);
-        }
-    }));
+    
+    const result = await dbQuery(`SELECT * FROM project WHERE Teacher_ID = ?`, [userID]);
+    if(result.status === 500)
+    {
+        return {status: 500};
+    }
+    return result;
 }
 
-function createCourse(CourseCode, CourseName, Teacher_ID) {
-
-    return new Promise((resolve, reject) => {
-        canCreate(CourseCode, CourseName).then(output => {
-            if(output)
-            {
-                const currentDate = new Date();
-    
-                // Get the current year
-                const currentYear = currentDate.getFullYear();
-    
-                const query = `INSERT INTO Course (Course_Code, Course_Name, Teacher_ID, Year, CanJoin)
-                VALUES ('${CourseCode}', '${CourseName}', ${Teacher_ID}, ${currentYear}, 'Y')`;
-                db.query(query, (err, results) => {
-                    if (err) {
-                        console.error('Error querying LogIn table:', err);
-                        reject(err);
-                    }
-                    else
-                    {
-                        console.log(results);
-                        resolve(true);
-                    }
-                });
-            }
-            else
-            {
-                resolve(-1); //indication the course already exists.
-            }
-        });
-    });
+async function addProject(projectName, maxStudents, minStudents, lastDate, userID)
+{
+    const result = await dbQuery(`INSERT INTO project (Project_Name, Max_Students, Min_Students, Last_Date, Teacher_ID, CanJoin) VALUES (?, ?, ?, ?, ?, 'Y')`, [projectName, maxStudents, minStudents, lastDate, userID]);
+    if(result.status === 500)
+    {
+        console.error('Error querying project table:', err);
+        return {status: 500};
+    }
+    else
+    {
+        return {status: 200};
+    }
 }
 
 function canCreate(CourseCode)
@@ -284,5 +261,5 @@ function getStudents(ID)
     });
 };
 
-module.exports = {createCourse, JoinCourse, fetchCoursesTeacher,
+module.exports = {addProject, JoinCourse, fetchCoursesTeacher,
     fetchCoursesStudent, viewCourse, unenrollCourse, deleteCourse, getStudents};

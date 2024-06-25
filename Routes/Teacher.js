@@ -1,30 +1,27 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {createCourse, fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
-const {createProject, getProjects, getProjectDetails, deleteProject, getCourseID} = require('../queries/ProjectQuery');
+const {fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
+const {getProjects, getProjectDetails, deleteProject, getCourseID} = require('../queries/ProjectQuery');
 const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
 
-const { fetchProfile } = require('../Controllers/Teacher/homeC');
-const { authenticateToken } = require('../Middlewares/jwtTokenVerifer');
+const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');
+const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtTokenVerifer');
 const cookieParser = require('cookie-parser');
+const { createProject } = require('../Controllers/Teacher/ProjectC');
 const router = express.Router();
 
 router.use(cookieParser());
 
 router.use(authenticateToken);
 
+router.use(validateUserTypeT);
+
 router.route('/profile').get(fetchProfile);
 
-router.get('/CreateCourse', (req,res) => {
-    res.render('Teacher/CreateCourse');
-});
+router.route('/home').get(loadHomePage);
 
-router.get('/Home', (req,res) => {
-    fetchCoursesTeacher(req.query.id).then(output => {
-    res.render('Teacher/Home' , {
-        Courses: output});
-    });
-});
+router.route('/createProject').post(createProject);
+
 
 router.post('/CreateCourse', (req,res) => {
     const jwtToken = req.cookies.token;

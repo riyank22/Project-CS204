@@ -15,20 +15,23 @@ async function fetchProfileTeacher(userID)
     }
 }
 
-function fetchProfileStudent(ID) {
-    return new Promise((resolve, reject) => db.query(`SELECT RollNo, Student_FName, Student_LName,
-    EmailAddress FROM student WHERE RollNo = ?`
-    [ID], (err, results) => {
-        if (err) {
-            console.error('Error querying LogIn table:', err);
-            reject(err);
-        }
-        else
-        {
-            console.log(results[0]);
-            resolve(results[0]);
-        }
-    }));
+async function fetchProfileStudent(userID)
+{
+    const params = [userID];
+    const result = await dbQuery(`SELECT * FROM student WHERE userId = ?`, params);
+    if(result.length === 1)
+    {
+        result[0].status = 200;
+        return result[0];
+    }
+    else if(result.status === 500)
+    {
+        return {status: 500};
+    }
+    else
+    {
+        return {status: 404};
+    }
 }
 
 module.exports = {fetchProfileTeacher, fetchProfileStudent};

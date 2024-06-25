@@ -22,4 +22,22 @@ function authenticateToken(req,res,next){
     next();
 }
 
-module.exports = {authenticateToken};
+function validateUserTypeT(req,res,next)
+{
+    if(req.userType !== 't')
+    {
+        return res.status(403).send("Unauthorized Access");
+    }
+    next();
+}
+
+function validateUserTypeS(req,res,next)
+{
+    if(req.userType !== 's')
+    {
+        return res.status(403).send("Unauthorized Access");
+    }
+    next();
+}
+
+module.exports = {authenticateToken, validateUserTypeT, validateUserTypeS};

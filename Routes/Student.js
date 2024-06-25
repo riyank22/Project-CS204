@@ -8,8 +8,16 @@ const {createTeam, inTeam, getTeamInfo, getAllTeamsInfo,
     joinTeam, leaveTeam, deleteTeam, getNonTeamStudent} = require('../queries/team');
 
 const {createInviteNotification,createRequestNotificaiton,deleteNotification} = require('../queries/notification'); 
+const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
+const { fetchProfile } = require('../Controllers/Student/homeC');
 
 router.use(cookieParser());
+
+router.use(authenticateToken);
+
+router.use(validateUserTypeS);
+
+router.route('/profile').get(fetchProfile);
 
 router.get('/JoinCourse', (req,res) => {
     res.render('Student/JoinCourse',

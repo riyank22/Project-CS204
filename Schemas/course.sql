@@ -1,17 +1,3 @@
-CREATE TABLE Course (
-    Course_ID INT PRIMARY KEY AUTO_INCREMENT,
-    Course_Code VARCHAR(10) NOT NULL,
-    Course_Name VARCHAR(50) NOT NULL,
-    Teacher_ID VARCHAR(5) NOT NULL,
-    Year INT NOT NULL,
-    CanJoin ENUM('Y','N') DEFAULT 'Y',
-    UNIQUE KEY Unique_Course_Code_Year (Course_Code, Year),
-    FOREIGN KEY (Teacher_ID) REFERENCES teacher(Teacher_ID)
-);
-
-
-Insert into Course(Course_Code, Course_Name, Teacher_ID, Year) values('CS201','Data Structures', 1, 2023);
-
 create table Enrollement(
     RollNo varchar(10),
     Course_ID int,
@@ -26,12 +12,14 @@ SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_I
 where RollNo = '202251127' and Year = 2023;
 
 create table project(
-    Course_ID int,
-    Project_ID int PRIMARY KEY AUTO_INCREMENT,
+    Project_ID varchar(20) PRIMARY KEY AUTO_INCREMENT,
     Project_Name varchar(20),
+    Teacher_ID VARCHAR(5) NOT NULL,
+    CanJoin ENUM('Y','N') DEFAULT 'Y',
     Max_Students int NOT NULL,
     Min_Students int NOT NULL,
     Last_Date date NOT NULL,
+    FOREIGN KEY (Teacher_ID) REFERENCES teacher(Teacher_ID),
     FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID),
     check( Min_Students <= Max_Students),
     check (Min_Students > 0)
