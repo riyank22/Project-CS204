@@ -1,8 +1,8 @@
 const dbQuery = require("../db");
 
-async function fetchCoursesTeacher(userID){
+async function fetchProjectTeacher(userID){
     
-    const result = await dbQuery(`SELECT * FROM project WHERE Teacher_ID = ?`, [userID]);
+    const result = await dbQuery(`SELECT Project_Name FROM project WHERE Teacher_ID = ?`, [userID]);
     if(result.status === 500)
     {
         return {status: 500};
@@ -10,9 +10,25 @@ async function fetchCoursesTeacher(userID){
     return result;
 }
 
+async function fetchProject(projectID){
+    console.log(projectID);
+    const result = await dbQuery(`SELECT * FROM project WHERE Project_ID = ?`, [projectID]);
+    if(result.status === 500)
+    {
+        return {status: 500};
+    }
+    else if(result.length === 0)
+    {
+        return {status: 404};
+    }
+    return result[0];
+}
+
 async function addProject(projectName, maxStudents, minStudents, lastDate, userID)
 {
-    const result = await dbQuery(`INSERT INTO project (Project_Name, Max_Students, Min_Students, Last_Date, Teacher_ID, CanJoin) VALUES (?, ?, ?, ?, ?, 'Y')`, [projectName, maxStudents, minStudents, lastDate, userID]);
+    const currentTime = new Date();
+    const result = await dbQuery(`INSERT INTO project (Project_Name, Max_Students, Min_Students, Last_Date, Teacher_ID, CanJoin, Posted_Date, Modified_Date) VALUES (?, ?, ?, ?, ?, 'Y', ?, ?)`,
+        [projectName, maxStudents, minStudents, lastDate, userID, currentTime, currentTime]);
     if(result.status === 500)
     {
         console.error('Error querying project table:', err);
@@ -24,28 +40,19 @@ async function addProject(projectName, maxStudents, minStudents, lastDate, userI
     }
 }
 
-function canCreate(CourseCode)
-{
-    const query = `SELECT * FROM Course WHERE Course_Code = '${CourseCode}' AND Year = ${new Date().getFullYear()}`;
-    return new Promise((resolve, reject) => db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error querying Course table:', err);
-            reject(err);
-        }
-        else
-        {
-            if(results.length > 0)
-            {
-                resolve(false);
-            }
-            else
-            {
-                resolve(true);
-            }
-        }
-    }));
-
-}
+async function fetchTeacherID(Project_ID){
+    
+    const result = await dbQuery(`SELECT Teacher_ID FROM project WHERE Project_ID = ?`, [Project_ID]);
+    if(result.status === 500)
+    {
+        return {status: 500};
+    }
+    else if(result.length === 0)
+    {
+        return {status: 404};
+    }
+    return {result: result[0], status: 200};
+} 
 
 function canJoin(Course_ID)
 {
@@ -62,6 +69,7 @@ function canJoin(Course_ID)
         }
     }));
 }
+
 
 function JoinCourse(RollNo, Course_ID)
 {
@@ -125,20 +133,6 @@ function fetchCoursesStudent(ID){
     }));
 }
 
-function viewCourse(Course_ID)
-{
-    return new Promise((resolve, reject) => db.query(`SELECT * FROM Course WHERE Course_ID = ?`,
-    [Course_ID], (err, results) => {
-        if (err) {
-            console.error('Error querying Course Table:', err);
-            reject(err);
-        }
-        else
-        {   
-            resolve(results);
-        }
-    }));
-}
 
 function unenrollCourse(RollNo, Course_ID)
 {
@@ -261,5 +255,5 @@ function getStudents(ID)
     });
 };
 
-module.exports = {addProject, JoinCourse, fetchCoursesTeacher,
-    fetchCoursesStudent, viewCourse, unenrollCourse, deleteCourse, getStudents};
+module.exports = {addProject, fetchProject ,fetchTeacherID, fetchProjectTeacher,
+    fetchCoursesStudent, unenrollCourse, deleteCourse, getStudents};

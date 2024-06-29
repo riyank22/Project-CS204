@@ -1,13 +1,13 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const {fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
-const {getProjects, getProjectDetails, deleteProject, getCourseID} = require('../queries/ProjectQuery');
+const {getProjects, deleteProject, getCourseID} = require('../queries/ProjectQuery');
 const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
 
 const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');
 const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtTokenVerifer');
 const cookieParser = require('cookie-parser');
-const { createProject } = require('../Controllers/Teacher/ProjectC');
+const { createProject, getProjectDetails } = require('../Controllers/Teacher/ProjectC');
 const router = express.Router();
 
 router.use(cookieParser());
@@ -20,43 +20,9 @@ router.route('/profile').get(fetchProfile);
 
 router.route('/home').get(loadHomePage);
 
-router.route('/createProject').post(createProject);
+router.route('/project').put(createProject);
 
-
-router.post('/CreateCourse', (req,res) => {
-    const jwtToken = req.cookies.token;
-    const {id} = jwt.verify(jwtToken, 'alpha');
-    const {Course_Code, Course_Name} = req.body;
-    createCourse(Course_Code, Course_Name, id).then(output => {
-        if(output == 1)
-        {
-            res.redirect('/Teacher/Home?id='+id);
-        }
-        else if(output == -1)
-        {
-            res.redirect('/Teacher/CreateCourse?Message=Course already exists');
-        }
-        else
-        {
-            console.log(output);
-        }
-    })
-});
-
-router.get('/Course', (req,res) => {
-    const id = req.query.id;
-    viewCourse(id).then(output => {
-        getStudents(id).then(students => {
-            getProjects(id).then(projects => {
-                res.render('Teacher/Course', {
-                    Course: output[0],
-                    Students: students,
-                    Projects: projects
-                });
-            });
-        });
-    });
-});
+router.route('/project/:Project_ID').get(getProjectDetails);
 
 router.get('/ViewCourseParticipants', (req,res) => {
     const Course_ID = req.query.Course_ID;

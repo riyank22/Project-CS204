@@ -15,6 +15,15 @@ exports.loginController = catchAsyncErrors(async (req, res) => {
 
         const result2 = await getUserID(result1.emailID, result1.userType);
 
+        if(result2.status !== 200)
+        {
+            return res.status(500).send("Error Logging In")
+        }
+        else if(result2.status === 404)
+        {
+            return res.status(404).send("User Not Found")
+        }
+
         const token = generateToken(result1.emailID, result1.userType, result2.userID);
         if (token !== 500) {
             res.cookie('token', token, { httpOnly: true });

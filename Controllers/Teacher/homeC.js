@@ -1,6 +1,6 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
 const { fetchProfileTeacher } = require('../../queries/profile');
-const { fetchCoursesTeacher } = require('../../queries/CourseQuery');
+const { fetchProjectTeacher } = require('../../queries/CourseQuery');
 
 exports.fetchProfile = catchAsyncErrors( async (req ,res) => 
     {
@@ -19,13 +19,13 @@ exports.fetchProfile = catchAsyncErrors( async (req ,res) =>
 exports.loadHomePage = catchAsyncErrors( async (req, res) => {
     const { userID, userType } = req;
 
-    const result = await fetchCoursesTeacher(userID);
+    const result = await fetchProjectTeacher(userID);
     if(result.status === 500)
     {
         res.status(500).send("Internal Server Error");
     }
     else
     {
-        res.status(200).send({status: 200, courses: result});
+        res.status(200).send({projects: result});
     }
 })

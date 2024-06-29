@@ -2,13 +2,13 @@ const mysql = require('mysql2/promise');
 
 // Create a connection pool
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '1234',
-  database: 'project',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+    host: 'localhost',
+    user: 'root',
+    password: '1234',
+    database: 'project',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // // Create a connection to the MySQL database
@@ -43,23 +43,23 @@ const pool = mysql.createPool({
 async function queryDatabase(queryString, params) {
     let connection;
     try {
-      // Get a connection from the pool
-      connection = await pool.getConnection();
-  
-      // Execute the query with parameters
-      const [rows, fields] = await connection.execute(queryString, params);
-  
-      // Return the query results
-      return rows;
+        // Get a connection from the pool
+        connection = await pool.getConnection();
+
+        // Execute the query with parameters
+        const [rows, fields] = await connection.execute(queryString, params);
+
+        // Return the query results
+        return rows;
     } catch (error) {
-      console.error('Error executing query:', error);
-      return {status:500}
+        console.error('Error executing query:', error);
+        return { status: 500 }
     } finally {
-      // Release the connection back to the pool
-      if (connection) {
-        connection.release();
-      }
+        // Release the connection back to the pool
+        if (connection) {
+            connection.release();
+        }
     }
-  }
+}
 
 module.exports = queryDatabase;

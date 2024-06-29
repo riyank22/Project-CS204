@@ -3,11 +3,15 @@ const dbQuery = require("../db");
 async function fetchProfileTeacher(userID)
 {
     const params = [userID];
-    const result = await dbQuery(`SELECT Teacher_FName, Teacher_LName, emailID, gender, Joining_Year FROM teacher WHERE userId = ?`, params);
+    const result = await dbQuery(`SELECT FName, LName, emailID FROM teacher WHERE userId = ?`, params);
     if(result.length === 1)
     {
         result[0].status = 200;
         return result[0];
+    }
+    else if(result.status === 500)
+    {
+        return {status: 500};
     }
     else
     {
@@ -18,7 +22,7 @@ async function fetchProfileTeacher(userID)
 async function fetchProfileStudent(userID)
 {
     const params = [userID];
-    const result = await dbQuery(`SELECT * FROM student WHERE userId = ?`, params);
+    const result = await dbQuery(`SELECT FName, LName, emailID FROM student WHERE userId = ?`, params);
     if(result.length === 1)
     {
         result[0].status = 200;

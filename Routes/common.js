@@ -2,14 +2,11 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
-console.log("in a")
 // Route for serving the login page
 router.get('/', (req, res) => {
     // res.end("Landing Page");
     res.render("LogIn");
 });
-
-
 
 // Route for serving the home page
 router.get('/Home', (req, res) => {

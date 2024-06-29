@@ -14,6 +14,11 @@ function authenticateToken(req,res,next){
     {
         return res.status(400).send("Your session has expired. Please login again");
     }
+
+    if(decoded.emailID === undefined || decoded.userType === undefined || decoded.userID === undefined)
+    {
+        return res.status(400).send("Bad Request");
+    }
     
     req.emailID = decoded.emailID;
     req.userType = decoded.userType;
