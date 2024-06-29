@@ -1,12 +1,10 @@
-create table Enrollement(
-    RollNo varchar(10),
-    Course_ID int,
-    int Year,
-    FOREIGN KEY (RollNo) REFERENCES student(RollNo),
-    FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID),
-    PRIMARY KEY (RollNo, Course_ID,Year)
+create table enrollement(
+    Student_ID int,
+    Project_ID int,
+    FOREIGN KEY (Student_ID) REFERENCES student(userID),
+    FOREIGN KEY (Project_ID) REFERENCES project(Project_ID),
+    PRIMARY KEY (Student_ID, Project_ID)
 );
-Insert into Enrollement values('202251127', 1);
 
 SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID
 where RollNo = '202251127' and Year = 2023;

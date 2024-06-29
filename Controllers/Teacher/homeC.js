@@ -1,6 +1,6 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
 const { fetchProfileTeacher } = require('../../queries/profile');
-const { fetchProjectTeacher } = require('../../queries/CourseQuery');
+const { fetchProjectTeacher } = require('../../queries/projectQuery');
 
 exports.fetchProfile = catchAsyncErrors( async (req ,res) => 
     {
@@ -17,7 +17,7 @@ exports.fetchProfile = catchAsyncErrors( async (req ,res) =>
     });
 
 exports.loadHomePage = catchAsyncErrors( async (req, res) => {
-    const { userID, userType } = req;
+    const { userID } = req;
 
     const result = await fetchProjectTeacher(userID);
     if(result.status === 500)

@@ -1,22 +1,26 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
-const { addProject, fetchProject } = require('../../queries/projectQuery');
-const {verifyUser} = require('../../Middlewares/verifyUser');
-const { DateTime } = require('luxon');
+const { addToProject, fetchProject } = require('../../queries/projectQuery');
 
-exports.createProject = catchAsyncErrors( async (req, res) => {
+exports.joinProject = catchAsyncErrors( async (req, res) => {
     const { userID } = req;
-    const { projectName, maxStudents, minStudents, lastDate } = req.body;
-    if(projectName === undefined || maxStudents === undefined || minStudents === undefined || lastDate === undefined)
+    const { Project_ID } = req.params;
+
+    const result = await addToProject(Project_ID, userID);
+    if(result.status === 200)
     {
-        res.status(400).send("Bad Request");  
+        res.status(200).send("Joined Project Successfully");
     }
-
-    const formatDate = DateTime.fromFormat(lastDate, 'yyyy-MM-dd').toString();
-
-    const output = await addProject(projectName, maxStudents, minStudents, formatDate, userID);
-    if(output.status === 200)
+    else if(result.status === 404)
     {
-        res.status(200).send("Project Created");
+        res.status(404).send("Project Not Found");
+    }
+    else if(result.status === 403)
+    {
+        res.status(403).send("Project is Closed for Joining");
+    }
+    else if(result.status === 409)
+    {
+        res.status(409).send("Already Joined Project");
     }
     else
     {
