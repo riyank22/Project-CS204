@@ -34,9 +34,13 @@ exports.getProjectDetails = catchAsyncErrors( async (req, res) => {
     if(result.status === 200)
     {
         const output = await fetchProject(Project_ID);
-        if(output.status === undefined)
+        if(output.status === 200)
         {
             res.status(200).send(output);
+        }
+        else if(output.status === 404)
+        {
+            res.status(404).send("Project Not Found");
         }
         else
         {

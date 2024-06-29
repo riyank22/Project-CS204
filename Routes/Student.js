@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { unenrollCourse, getStudents, fetchProject } = require('../queries/CourseQuery');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 const { createTeam, inTeam, getTeamInfo, getAllTeamsInfo,

@@ -1,4 +1,5 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
+const { verifyUser } = require('../../Middlewares/verifyUser');
 const { addToProject, fetchProject } = require('../../queries/projectQuery');
 
 exports.joinProject = catchAsyncErrors( async (req, res) => {
@@ -35,10 +36,11 @@ exports.getProjectDetails = catchAsyncErrors( async (req, res) => {
         res.status(400).send("Bad Request");
     }
     const result = await verifyUser(req, res, Project_ID);
+    console.log("Validaton compelt4e " + result.status)
     if(result.status === 200)
     {
         const output = await fetchProject(Project_ID);
-        if(output.status === undefined)
+        if(output.status === 200)
         {
             res.status(200).send(output);
         }

@@ -1,7 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {fetchCoursesTeacher, viewCourse, deleteCourse, getStudents} = require('../queries/CourseQuery');
-const {getProjects, deleteProject, getCourseID} = require('../queries/ProjectQuery');
 const {getNonTeamStudent, getTeamInfo, viewTeams} = require('../queries/team');
 
 const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');

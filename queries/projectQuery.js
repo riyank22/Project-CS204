@@ -59,6 +59,18 @@ async function fetchTeacherID(Project_ID) {
     return { result: result[0], status: 200 };
 }
 
+async function fetchStudentID(Project_ID) {
+    const result = await dbQuery(`SELECT Student_ID FROM enrollement WHERE Project_ID = ?`, [Project_ID]);
+    if (result.status === 500) {
+        return { status: 500 };
+    }
+    else if (result.length === 0) {
+        return { status: 404 };
+    }
+    return { result: result[0], status: 200 };
+}
+
+
 async function addToProject(Project_ID, Student_ID) {
     const projectDetails = await fetchProject(Project_ID);
     if (projectDetails.status === 200) {
@@ -224,6 +236,7 @@ module.exports = {
     fetchProject,
     addProject,
     fetchTeacherID,
+    fetchStudentID,
     addToProject,
     fetchCoursesStudent,
     unenrollCourse,
