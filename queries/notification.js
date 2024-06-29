@@ -1,18 +1,16 @@
 const db = require("../db");
-const{getProjectID} = require('./team');
-const{joinTeam, getTeamID} = require('./team')
+const { getProjectID } = require('./team');
+const { joinTeam, getTeamID } = require('./team')
 
-function createRequestNotificaiton(Project, RollNo, id)
-{
+function createRequestNotificaiton(Project, RollNo, id) {
     return new Promise((resolve, reject) => {
         getTeamID(Project, RollNo).then(Team_ID => {
-            db.query(`INSERT INTO request (Team_ID, Sender_ID) VALUES (?, ?)`,[Team_ID, id], (err, results) => {
+            db.query(`INSERT INTO request (Team_ID, Sender_ID) VALUES (?, ?)`, [Team_ID, id], (err, results) => {
                 if (err) {
                     console.error('Error querying group table:', err);
                     reject(err);
                 }
-                else
-                {
+                else {
                     resolve(true);
                 }
             });
@@ -20,17 +18,14 @@ function createRequestNotificaiton(Project, RollNo, id)
     });
 }
 
-function createInviteNotification(Project_ID, RollNo, id)
-{
+function createInviteNotification(Project_ID, RollNo, id) {
     return new Promise((resolve, reject) => {
         getTeamID(Project_ID, id).then(Team_ID => {
             joinTeam(Team_ID, RollNo).then(output => {
-                if(output == Project_ID)
-                {
-                   resolve(true);
+                if (output == Project_ID) {
+                    resolve(true);
                 }
-                else
-                {
+                else {
                     resolve(false);
                 }
             });
@@ -38,8 +33,7 @@ function createInviteNotification(Project_ID, RollNo, id)
     });
 }
 
-function deleteNotification(RollNo)
-{
+function deleteNotification(RollNo) {
     return new Promise((resolve, reject) => {
         const query1 = `DELETE FROM request WHERE Sender_ID = ${RollNo}`;
         const query2 = `DELETE FROM invite WHERE Receiver_ID = ${RollNo}`;
@@ -48,15 +42,13 @@ function deleteNotification(RollNo)
                 console.error('Error querying group table:', err);
                 reject(err);
             }
-            else
-            {
+            else {
                 db.query(query2, (err, results) => {
                     if (err) {
                         console.error('Error querying group table:', err);
                         reject(err);
                     }
-                    else
-                    {
+                    else {
                         resolve(true);
                     }
                 });
@@ -65,17 +57,15 @@ function deleteNotification(RollNo)
     });
 }
 
-function viewInvites(RollNo, Project_ID)
-{
+function viewInvites(RollNo, Project_ID) {
     return new Promise((resolve, reject) => {
         const query = `SELECT * FROM invite WHERE Receiver_ID = ${RollNo} AND Team_ID IN (SELECT id FROM Team WHERE Project_ID = ${Project_ID})`;
-        db.query(`SELECT * FROM invite WHERE Receiver_ID = ?`,[RollNo], (err, results) => {
+        db.query(`SELECT * FROM invite WHERE Receiver_ID = ?`, [RollNo], (err, results) => {
             if (err) {
                 console.error('Error querying group table:', err);
                 reject(err);
             }
-            else
-            {
+            else {
                 resolve(results);
             }
         });
@@ -83,4 +73,4 @@ function viewInvites(RollNo, Project_ID)
 }
 
 
-module.exports = {deleteNotification,createInviteNotification,createRequestNotificaiton};
+module.exports = { deleteNotification, createInviteNotification, createRequestNotificaiton };

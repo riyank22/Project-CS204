@@ -15,12 +15,10 @@ exports.loginController = catchAsyncErrors(async (req, res) => {
 
         const result2 = await getUserID(result1.emailID, result1.userType);
 
-        if(result2.status !== 200)
-        {
+        if (result2.status !== 200) {
             return res.status(500).send("Error Logging In")
         }
-        else if(result2.status === 404)
-        {
+        else if (result2.status === 404) {
             return res.status(404).send("User Not Found")
         }
 
@@ -34,8 +32,7 @@ exports.loginController = catchAsyncErrors(async (req, res) => {
 
                 return res.status(200).send("Teacher Login")
             }
-            else
-            {
+            else {
                 return res.status(500).send("Invalid User Type")
             }
         }
@@ -44,36 +41,33 @@ exports.loginController = catchAsyncErrors(async (req, res) => {
     return res.status(result1.status).send(result1);
 })
 
-exports.logoutController = (req,res) => {
+exports.logoutController = (req, res) => {
     res.clearCookie('token');
     res.status(200).send("You are logged Out");
 }
 
-exports.changePasswordController = catchAsyncErrors(async(req, res) =>{
+exports.changePasswordController = catchAsyncErrors(async (req, res) => {
 
-    const {oldPassword, newPassword} = req.body;
-    if(oldPassword == undefined || newPassword == undefined)
-    {
+    const { oldPassword, newPassword } = req.body;
+    if (oldPassword == undefined || newPassword == undefined) {
         return res.status(400).send("Old Password and New Password are required");
     }
 
-    if(oldPassword === newPassword)
-    {
+    if (oldPassword === newPassword) {
         return res.status(400).send("Old Password and New Password cannot be same");
     }
 
     const isOldPasswordValid = await authorizeUser(req.emailID, oldPassword);
 
-    if(isOldPasswordValid.status !== 200)
-    {
+    if (isOldPasswordValid.status !== 200) {
         return res.status(isOldPasswordValid.status).send("Error changing Password");
     }
-    
+
     const result = await updatePassword(req.emailID, req.body.newPassword);
-    if(result.status = 200){
+    if (result.status = 200) {
         res.status(200).send("Password Changed Successfullt")
     }
-    else{
+    else {
         res.status(500).send("Password changed failed, try again later")
     }
 }) 

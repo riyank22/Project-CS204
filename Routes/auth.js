@@ -6,7 +6,7 @@ const { authenticateToken } = require('../Middlewares/jwtTokenVerifer');
 
 router.use(cookieParser());
 
-router.route('/login').post(loginController); 
+router.route('/login').post(loginController);
 
 router.route('/logout').get(logoutController);
 

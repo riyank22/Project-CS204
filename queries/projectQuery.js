@@ -23,7 +23,6 @@ async function fetchProjectStudent(userID) {
 }
 
 async function fetchProject(projectID) {
-    console.log(projectID);
     const result = await dbQuery(`SELECT * FROM project WHERE Project_ID = ?`, [projectID]);
     if (result.status === 500) {
         return { status: 500 };
