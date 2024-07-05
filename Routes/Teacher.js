@@ -6,6 +6,8 @@ const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');
 const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtTokenVerifer');
 const cookieParser = require('cookie-parser');
 const { createProject, getProjectDetails } = require('../Controllers/Teacher/ProjectC');
+const { verifyUser } = require('../Middlewares/verifyUser');
+const { getEnrolledStudentList } = require('../Controllers/commonC');
 const router = express.Router();
 
 router.use(cookieParser());
@@ -22,15 +24,7 @@ router.route('/project').put(createProject);
 
 router.route('/project/:Project_ID').get(getProjectDetails);
 
-router.get('/ViewCourseParticipants', (req, res) => {
-    const Course_ID = req.query.Course_ID;
-    getStudents(Course_ID).then(output => {
-        res.render('Teacher/ViewCourseParticipants', {
-            Course_ID: Course_ID,
-            Students: output
-        });
-    });
-});
+router.route('/project/:Project_ID/viewParticpants').get(getEnrolledStudentList);
 
 router.get('/ViewNonTeamStudents', (req, res) => {
     const Project_ID = req.query.Project_ID;

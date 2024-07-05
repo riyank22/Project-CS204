@@ -1,4 +1,4 @@
-const { fetchTeacherID, fetchStudentID } = require("../queries/projectQuery");
+const { fetchTeacherID, verifyStudentID } = require("../queries/projectQuery");
 
 async function verifyUser(req, res, Project_ID) {
 
@@ -10,8 +10,8 @@ async function verifyUser(req, res, Project_ID) {
         }
     }
     else {
-        output = await fetchStudentID(Project_ID);
-        if (output.status === 200 && req.userID === output.result.Student_ID) {
+        output = await verifyStudentID(Project_ID, req.userID);
+        if (output.status === 200) {
             return { status: 200 };
         }
     }
