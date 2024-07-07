@@ -10,9 +10,28 @@ exports.createProject = catchAsyncErrors(async (req, res) => {
         res.status(400).send("Bad Request");
     }
 
+    let {canJoin, projectDescription, totalGroups} = req.body;
+
+    console.log(projectDescription)
+
+    if(canJoin === undefined)
+    {
+        canJoin = 'Y';
+    }
+
+    if(projectDescription === undefined)
+    {
+        projectDescription = null;
+    }
+
+    if(totalGroups === undefined)
+    {
+        totalGroups = null;
+    }
+
     const formatDate = DateTime.fromFormat(lastDate, 'yyyy-MM-dd').toString();
 
-    const output = await addProject(projectName, maxStudents, minStudents, formatDate, userID);
+    const output = await addProject(projectName, maxStudents, minStudents, formatDate, userID, canJoin, projectDescription, totalGroups);
     if (output.status === 200) {
         res.status(200).send("Project Created");
     }

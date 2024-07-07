@@ -34,10 +34,10 @@ async function fetchProject(projectID) {
     return result[0];
 }
 
-async function addProject(projectName, maxStudents, minStudents, lastDate, userID) {
+async function addProject(projectName, maxStudents, minStudents, lastDate, userID, canJoin, projectDescription, totalGroups) {
     const currentTime = new Date();
-    const result = await dbQuery(`INSERT INTO project (Project_Name, Max_Students, Min_Students, Last_Date, Teacher_ID, CanJoin, Posted_Date, Modified_Date) VALUES (?, ?, ?, ?, ?, 'Y', ?, ?)`,
-        [projectName, maxStudents, minStudents, lastDate, userID, currentTime, currentTime]);
+    const result = await dbQuery(`INSERT INTO project (Project_Name, Max_Students, Min_Students, Last_Date, Teacher_ID, CanJoin, Posted_Date, Modified_Date, Project_Description, Total_Groups) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [projectName, maxStudents, minStudents, lastDate, userID, canJoin, currentTime, currentTime, projectDescription, totalGroups]);
     if (result.status === 500) {
         console.error('Error querying project table:', err);
         return { status: 500 };
