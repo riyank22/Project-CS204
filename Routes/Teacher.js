@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { getNonTeamStudent, getTeamInfo, viewTeams } = require('../queries/team');
 
 const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');
 const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtTokenVerifer');

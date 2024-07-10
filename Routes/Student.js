@@ -2,14 +2,13 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
-const { createTeam, inTeam, getTeamInfo, getAllTeamsInfo,
-    joinTeam, leaveTeam, deleteTeam, getNonTeamStudent } = require('../queries/team');
 
 const { createInviteNotification, createRequestNotificaiton, deleteNotification } = require('../queries/notification');
 const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
 const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
 const { joinProject, getProjectDetails } = require('../Controllers/Student/ProjectC');
 const { getEnrolledStudentList } = require('../Controllers/commonC');
+const { createGroup, joinGroupC } = require('../Controllers/Student/GroupC');
 
 router.use(cookieParser());
 
@@ -26,6 +25,10 @@ router.route('/project/:Project_ID').post(joinProject);
 router.route('/project/:Project_ID').get(getProjectDetails);
 
 router.route('/project/:Project_ID/viewParticpants').get(getEnrolledStudentList);
+
+router.route('/project/:Project_ID/group').put(createGroup);
+
+router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
 
 router.get('/Unenroll', (req, res) => {
     const Course_ID = req.query.Course_ID;
@@ -85,42 +88,6 @@ router.get('/Project/ViewAllTeams', (req, res) => {
         res.render('Student/Project/ViewAllTeams', {
             Teams: output
         });
-    });
-});
-
-router.get('/Project/JoinTeam', (req, res) => {
-    const { id } = jwt.verify(req.cookies.token, 'alpha');
-    const Team_ID = req.query.Team_ID;
-
-    joinTeam(Team_ID, id).then(output => {
-        if (output != false) {
-            res.redirect('/Student/Project?id=' + output);
-        }
-        else {
-            console.log(output);
-        }
-    });
-}
-);
-
-router.get('/Project/CreateTeam', (req, res) => {
-    res.render('Student/Team/CreateTeam',
-        {
-            Project_ID: req.query.Project_ID
-        });
-});
-
-router.post('/Project/CreateTeam', (req, res) => {
-    const token = req.cookies.token;
-    const { id } = jwt.verify(token, 'alpha');
-    const { Project_ID, Team_Name } = req.body;
-    createTeam(Project_ID, id, Team_Name).then(output => {
-        if (output == 1) {
-            res.redirect('/Student/Project?id=' + Project_ID);
-        }
-        else {
-            console.log(output);
-        }
     });
 });
 

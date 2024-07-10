@@ -1,6 +1,4 @@
 const db = require("../db");
-const { getProjectID } = require('./team');
-const { joinTeam, getTeamID } = require('./team')
 
 function createRequestNotificaiton(Project, RollNo, id) {
     return new Promise((resolve, reject) => {

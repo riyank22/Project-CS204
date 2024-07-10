@@ -64,7 +64,7 @@ async function verifyStudentID(Project_ID, Student_ID) {
         return { status: 500 };
     }
     else if (result.length === 0) {
-        return { status: 404 };
+        return { status: 404, message: 'Project not found or you not in the project.' };
     }
     else if (result.length === 1) {
         return { status: 200 };
