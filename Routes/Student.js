@@ -7,7 +7,7 @@ const { createInviteNotification, createRequestNotificaiton, deleteNotification 
 const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
 const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
 const { joinProject, getProjectDetails } = require('../Controllers/Student/ProjectC');
-const { getEnrolledStudentList } = require('../Controllers/commonC');
+const { getEnrolledStudentList, getGroups } = require('../Controllers/commonC');
 const { createGroup, joinGroupC } = require('../Controllers/Student/GroupC');
 
 router.use(cookieParser());
@@ -29,6 +29,8 @@ router.route('/project/:Project_ID/viewParticpants').get(getEnrolledStudentList)
 router.route('/project/:Project_ID/group').put(createGroup);
 
 router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
+
+router.route('/project/:Project_ID/viewGroups').get(getGroups);
 
 router.get('/Unenroll', (req, res) => {
     const Course_ID = req.query.Course_ID;

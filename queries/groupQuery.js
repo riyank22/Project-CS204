@@ -1,7 +1,6 @@
 const dbQuery = require("../db");
 
-async function canEdit(Project_ID)
-{
+async function canEdit(Project_ID) {
     const result = await dbQuery(`SELECT Last_Date FROM project WHERE Project_ID = ?`, [Project_ID]);
     if (result.status === 500) {
         return { status: 500, message: "Internal Server Error" };
@@ -10,8 +9,7 @@ async function canEdit(Project_ID)
     if (result[0].Last_Date < new Date()) {
         return { status: 403, message: "Cannot create group after deadline" };
     }
-    else
-    {
+    else {
         return { status: 200 };
     }
 }
@@ -28,36 +26,36 @@ async function insertGroup(Project_ID, Group_Name, Student_ID) {
         const count = await dbQuery(`select * from number_of_groups where Project_ID = ?`, [Project_ID]);
 
         if (result.status === 500) {
-            return { status: 500, message: "Internal Server Error"};
+            return { status: 500, message: "Internal Server Error" };
         }
 
         if (count.length != 0 && result[0].Total_Groups <= count[0].count) {
-            return { status: 403, message: "Max number of groups are formed. Can not create more groups."};
+            return { status: 403, message: "Max number of groups are formed. Can not create more groups." };
         }
     }
 
-    if(await inGroup(Project_ID, Student_ID)){
-        return { status: 403 , message: "Already in a group"};
+    if (await inGroup(Project_ID, Student_ID)) {
+        return { status: 403, message: "Already in a group" };
     }
 
     const totalGroups = await dbQuery(`SELECT * FROM \`group\` WHERE Project_ID = ? AND Group_Name = ?`, [Project_ID, Group_Name]);
 
     if (totalGroups.status === 500) {
-        return { status: 500, message: "Internal Server Error"};
+        return { status: 500, message: "Internal Server Error" };
     }
 
     if (totalGroups.length > 0) {
         return { status: 409, message: "Group Name already exists, change Group Name." };
     }
 
-    const output1 = await dbQuery(`INSERT INTO \`group\` (Project_ID, Group_Name, Creation_Time, Capacity_Left) VALUES (?, ?, ?, ?)`, [Project_ID, Group_Name, new Date(), result[0].Max_Students -1]);
-    if (output1.status === 500){
+    const output1 = await dbQuery(`INSERT INTO \`group\` (Project_ID, Group_Name, Creation_Time, Capacity_Left) VALUES (?, ?, ?, ?)`, [Project_ID, Group_Name, new Date(), result[0].Max_Students]);
+    if (output1.status === 500) {
         return { status: 500, message: "Internal Server Error" };
     }
 
     const gid = await dbQuery(`SELECT GID FROM \`group\` WHERE Project_ID = ? AND Group_Name = ?`, [Project_ID, Group_Name]);
 
-    if(gid.status === 500 || gid.length === 0){
+    if (gid.status === 500 || gid.length === 0) {
         return { status: 500, message: "Internal Server Error" };
     }
 
@@ -65,25 +63,24 @@ async function insertGroup(Project_ID, Group_Name, Student_ID) {
 
     const output2 = await dbQuery(`INSERT INTO group_Member (Project_ID, GID, Student_ID, Role, Joining_Time) VALUES (?, ?, ?, 'L', ?)`, [Project_ID, gid[0].GID, Student_ID, new Date()]);
 
-    if (output2.status === 500){
+    if (output2.status === 500) {
         return { status: 500, message: "Internal Server Error" };
     }
 
     return { status: 200, message: "Group Created Successfully" };
 }
 
-async function inGroup(Project_ID, Student_ID){
+async function inGroup(Project_ID, Student_ID) {
     const result = await dbQuery(`SELECT * FROM group_member WHERE Project_ID = ? AND Student_ID  = ?`, [Project_ID, Student_ID]);
 
-    if(result.length > 0)
+    if (result.length > 0)
         return true;
     else
         return false;
-    
+
 }
 
 async function joinGroup(Project_ID, GID, Student_ID) {
-    console.log(Project_ID, GID, Student_ID)
     let result = await dbQuery(`SELECT count(*) as count FROM group_member WHERE Project_ID = ? AND Student_ID = ?`, [Project_ID, Student_ID]);
 
     if (result.status === 500) {
@@ -100,7 +97,8 @@ async function joinGroup(Project_ID, GID, Student_ID) {
         return { status: 500, message: "Internal Server Error" };
     }
 
-    if (result.lenght === 0) {
+    if (result.lenght == 0 || result === null) {
+        console.log("hell")
         return { status: 404, message: "Group Not Found or is not assciated with this project" };
     }
 
@@ -117,31 +115,34 @@ async function joinGroup(Project_ID, GID, Student_ID) {
     return { status: 200, message: "Joined Group Successfully" };
 };
 
-async function fetchTeamInfo(Project_ID) {
+async function fetchgroups(Project_ID) {
+    const result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ?`, [Project_ID]);
 
-    return new Promise((resolve, reject) => {
-        db.query(query1, async (err, results) => {
-            if (err) {
-                console.error('Error querying team table:', err);
-                reject(err);
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    let groups = [];
+    let currentGroup = {};
+    let currentGID = null
+
+    for (const obj of result) {
+        const member = { FName: obj.FName, LName: obj.LName, Student_ID: obj.Student_ID }
+        if (currentGID === null || currentGID !== obj.GID) {
+            if (currentGID !== null) {
+                groups.push(currentGroup)
             }
-            else {
-                for (let i = 0; i < results.length; i++) {
-                    const query2 = `select s.FName, s.LName, s.RollNo, t.role from student s join Team_Member t on t.RollNo = s.RollNo where Team_ID = ${results[i].id}`;
-                    await db.query(query2, (err, results2) => {
-                        if (err) {
-                            console.error('Error querying team table:', err);
-                            reject(err);
-                        }
-                        else {
-                            results[i]["Members"] = results2;
-                        }
-                    });
-                }
-                resolve(results);
-            }
-        });
-    });
+            currentGID = obj.GID
+            currentGroup = { GID: obj.GID, Group_Name: obj.Group_Name, Capacity_Left: obj.Capacity_Left, members: [member] };
+        }
+        else {
+            currentGroup.members.push(member);
+        }
+    }
+
+    groups.push(currentGroup)
+
+    return { status: 200, groups: groups }
 }
 
 function getTeamInfo(Team_ID) {
@@ -292,8 +293,11 @@ function getNonTeamStudent(Project_ID) {
     });
 }
 
-module.exports = {canEdit,
-    insertGroup,joinGroup, 
-    fetchTeamInfo, viewTeams,
+module.exports = {
+    canEdit,
+    insertGroup,
+    joinGroup,
+    fetchgroups,
+    viewTeams,
     leaveTeam, deleteTeam, getNonTeamStudent, getProjectID, getTeamID
 }
