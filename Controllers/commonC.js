@@ -23,7 +23,7 @@ exports.getEnrolledStudentList = catchAsyncErrors(async (req, res) => {
         }
     }
     else {
-        res.status(result.status).send("Forbidden");
+        res.status(result.status).send(result.message);
     }
 })
 

@@ -8,7 +8,7 @@ const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtToke
 const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
 const { joinProject, getProjectDetails } = require('../Controllers/Student/ProjectC');
 const { getEnrolledStudentList, getGroups } = require('../Controllers/commonC');
-const { createGroup, joinGroupC } = require('../Controllers/Student/GroupC');
+const { createGroup, joinGroupC, leaveGroupC } = require('../Controllers/Student/GroupC');
 
 router.use(cookieParser());
 
@@ -31,6 +31,8 @@ router.route('/project/:Project_ID/group').put(createGroup);
 router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
 
 router.route('/project/:Project_ID/viewGroups').get(getGroups);
+
+router.route('/project/:Project_ID/group/:GID').delete(leaveGroupC);
 
 router.get('/Unenroll', (req, res) => {
     const Course_ID = req.query.Course_ID;
@@ -90,19 +92,6 @@ router.get('/Project/ViewAllTeams', (req, res) => {
         res.render('Student/Project/ViewAllTeams', {
             Teams: output
         });
-    });
-});
-
-router.get('/Project/LeaveTeam', (req, res) => {
-    const { id } = jwt.verify(req.cookies.token, 'alpha');
-    const Team_ID = req.query.Team_ID;
-    leaveTeam(Team_ID, id).then(output => {
-        if (output != -1) {
-            res.redirect('/Student/Project?id=' + output);
-        }
-        else {
-            console.log(output);
-        }
     });
 });
 

@@ -1,5 +1,6 @@
 const { fetchTeacherID, verifyStudentID } = require("../queries/projectQuery");
 
+//Verfiiy the user if he is a teacher or student as well as he is in the project or not.
 async function verifyUser(req, res, Project_ID) {
 
     let output;

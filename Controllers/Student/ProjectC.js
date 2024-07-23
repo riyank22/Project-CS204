@@ -39,4 +39,7 @@ exports.getProjectDetails = catchAsyncErrors(async (req, res) => {
             res.status(500).send("Internal Server Error");
         }
     }
+    else {
+        res.status(result.status).send(result.message);
+    }
 });

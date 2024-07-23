@@ -1,6 +1,7 @@
+const e = require("express");
 const dbQuery = require("../db");
 
-async function canEdit(Project_ID) {
+async function canEditAfterDeadline(Project_ID) {
     const result = await dbQuery(`SELECT Last_Date FROM project WHERE Project_ID = ?`, [Project_ID]);
     if (result.status === 500) {
         return { status: 500, message: "Internal Server Error" };
@@ -12,6 +13,16 @@ async function canEdit(Project_ID) {
     else {
         return { status: 200 };
     }
+}
+
+async function inGroup(Project_ID, Student_ID) {
+    const result = await dbQuery(`SELECT * FROM group_member WHERE Project_ID = ? AND Student_ID  = ?`, [Project_ID, Student_ID]);
+
+    if (result.length > 0)
+        return {status:200 , message: "Already in a group", details:result[0]};
+    else
+        return {status:404 , message: "Not in a group"};
+
 }
 
 async function insertGroup(Project_ID, Group_Name, Student_ID) {
@@ -32,10 +43,6 @@ async function insertGroup(Project_ID, Group_Name, Student_ID) {
         if (count.length != 0 && result[0].Total_Groups <= count[0].count) {
             return { status: 403, message: "Max number of groups are formed. Can not create more groups." };
         }
-    }
-
-    if (await inGroup(Project_ID, Student_ID)) {
-        return { status: 403, message: "Already in a group" };
     }
 
     const totalGroups = await dbQuery(`SELECT * FROM \`group\` WHERE Project_ID = ? AND Group_Name = ?`, [Project_ID, Group_Name]);
@@ -70,39 +77,21 @@ async function insertGroup(Project_ID, Group_Name, Student_ID) {
     return { status: 200, message: "Group Created Successfully" };
 }
 
-async function inGroup(Project_ID, Student_ID) {
-    const result = await dbQuery(`SELECT * FROM group_member WHERE Project_ID = ? AND Student_ID  = ?`, [Project_ID, Student_ID]);
-
-    if (result.length > 0)
-        return true;
-    else
-        return false;
-
-}
-
 async function joinGroup(Project_ID, GID, Student_ID) {
-    let result = await dbQuery(`SELECT count(*) as count FROM group_member WHERE Project_ID = ? AND Student_ID = ?`, [Project_ID, Student_ID]);
 
-    if (result.status === 500) {
+    const group = await dbQuery(`SELECT Capacity_Left FROM \`group\` WHERE Project_ID = ? AND GID = ?`, [Project_ID, GID]);
+
+    if (group.status === 500) {
         return { status: 500, message: "Internal Server Error" };
     }
-
-    if (result[0].count > 0) {
-        return { status: 409, message: "Already in a group" };
-    }
-
-    result = await dbQuery(`SELECT Capacity_Left FROM \`group\` WHERE Project_ID = ? AND GID = ?`, [Project_ID, GID]);
-
-    if (result.status === 500) {
-        return { status: 500, message: "Internal Server Error" };
-    }
-
-    if (result.lenght == 0 || result === null) {
-        console.log("hell")
+   
+    if (group.lenght === 0) {
         return { status: 404, message: "Group Not Found or is not assciated with this project" };
     }
 
-    if (result[0].Capacity_Left === 0) {
+    console.log(group.length === 0)
+
+    if (group[0].Capacity_Left === 0) {
         return { status: 403, message: "Group is full" };
     }
 
@@ -143,6 +132,21 @@ async function fetchgroups(Project_ID) {
     groups.push(currentGroup)
 
     return { status: 200, groups: groups }
+}
+
+async function leavegroup(Team_ID, Student_ID, Role) {
+    if(Role === 'M')
+    {
+        const result = await dbQuery(`DELETE FROM group_member WHERE GID = ? AND Student_ID = ?`, [Team_ID, Student_ID]);
+        if (result.status === 500) {
+            return { status: 500, message: "Internal Server Error" };
+        }
+        return { status: 200, message: "Left Group Successfully" };
+    }
+    else
+    {
+        return { status: 403, message: "You are the leader of the group. You can not leave the group." };
+    }
 }
 
 function getTeamInfo(Team_ID) {
@@ -239,22 +243,6 @@ function deleteTeam(Team_ID) {
     });
 }
 
-function leaveTeam(Team_ID, RollNo) {
-    return new Promise((resolve, reject) => {
-        db.query(`DELETE FROM Team_Member WHERE Team_ID = ? AND RollNo = ?`, [Team_ID, RollNo], (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                getProjectID(Team_ID).then(Project_ID => {
-                    resolve(Project_ID);
-                });
-            }
-        });
-    });
-}
-
 function getCourseID(Project_ID) {
     return new Promise((resolve, reject) => {
         db.query(`SELECT Course_ID FROM project WHERE Project_ID = ?`, [Project_ID], (err, results) => {
@@ -294,10 +282,12 @@ function getNonTeamStudent(Project_ID) {
 }
 
 module.exports = {
-    canEdit,
+    canEditAfterDeadline,
     insertGroup,
     joinGroup,
     fetchgroups,
+    inGroup,
+    leavegroup,
     viewTeams,
-    leaveTeam, deleteTeam, getNonTeamStudent, getProjectID, getTeamID
+    deleteTeam, getNonTeamStudent, getProjectID, getTeamID
 }
