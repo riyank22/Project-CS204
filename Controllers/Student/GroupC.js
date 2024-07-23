@@ -86,7 +86,7 @@ exports.leaveGroupC = catchAsyncErrors(async (req, res) => {
         return res.status(result.status).send(result.message);
     }
 
-    result = await verifyGroup(req,res,Project_ID, userID, GID);
+    result = await verifyGroup(userID, Project_ID, GID);
 
     if(result.status !== 200)
     {

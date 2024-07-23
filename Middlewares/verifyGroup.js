@@ -1,17 +1,11 @@
 const { inGroup } = require("../queries/groupQuery");
 
-async function verifyGroup(req, res, Project_ID, GID) {
+async function verifyGroup( userID, Project_ID, GID) {
 
-    let output;
-    if (req.userType === 't') {
-        return res.status(403).send("You are a teacher, you can't deal with group.");
-    }
-    else {
-        output = await inGroup(Project_ID, req.userID);
-    }
+    const output = await inGroup(Project_ID, userID);
 
-    if(output.details.GID !== GID) {
-        return res.status(403).send("You are not in this group or group does not exists.");
+    if(output.details !== undefined && output.details.GID != GID) {
+        return {status: 403, message : "You are not in this group or group does not exists."};
     }
 
     return output;

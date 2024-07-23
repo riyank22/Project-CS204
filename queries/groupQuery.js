@@ -134,18 +134,26 @@ async function fetchgroups(Project_ID) {
     return { status: 200, groups: groups }
 }
 
-async function leavegroup(Team_ID, Student_ID, Role) {
+async function leavegroup(GID, Student_ID, Role) {
     if(Role === 'M')
     {
-        const result = await dbQuery(`DELETE FROM group_member WHERE GID = ? AND Student_ID = ?`, [Team_ID, Student_ID]);
+        const result = await dbQuery(`DELETE FROM group_member WHERE GID = ? AND Student_ID = ?`, [GID, Student_ID]);
         if (result.status === 500) {
             return { status: 500, message: "Internal Server Error" };
         }
         return { status: 200, message: "Left Group Successfully" };
     }
-    else
+    else if(Role === 'L')
     {
-        return { status: 403, message: "You are the leader of the group. You can not leave the group." };
+        const result = await dbQuery(`DELETE FROM group_member WHERE GID = ?`, [GID]);
+        if (result.status === 500) {
+            return { status: 500, message: "Internal Server Error" };
+        }
+        const result2 = await dbQuery(`DELETE FROM \`group\` WHERE GID = ?`, [GID]);
+        if (result2.status === 500) {
+            return { status: 500, message: "Internal Server Error" };
+        }
+        return { status: 200, message: "Left Group Successfully" };
     }
 }
 
