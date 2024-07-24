@@ -1,4 +1,5 @@
 const dbQuery = require("../db");
+const { inGroup } = require("./groupQuery");
 
 async function fetchProjectTeacher(userID) {
 
@@ -112,6 +113,28 @@ async function addToProject(Project_ID, Student_ID) {
     }
 }
 
+async function unenrollProject(Student_ID, Project_ID) {
+    const ingroup = await inGroup(Project_ID, Student_ID);
+
+    console.log(ingroup);
+
+    if (ingroup.status === 500) {
+        return { status: 500, message: 'Internal Server Error' };
+    }
+    else if (ingroup.status === 200) {
+        return { status: 403, message: 'Please leave the group before unenrolling from the project.' };
+    }
+
+    const result = await dbQuery(`DELETE FROM enrollement WHERE Student_ID = ? AND Project_ID = ?`, [Student_ID, Project_ID]);
+
+    if (result.status === 500) {
+        return { status: 500, message: 'Internal Server Error' };
+    }
+    else {
+        return { status: 200, message: 'Left Project successfully.' };
+    }
+}
+
 function fetchCoursesStudent(ID) {
     return new Promise((resolve, reject) => db.query(`SELECT * FROM Enrollement join Course on Enrollement.Course_ID = Course.Course_ID
     where RollNo = '${ID}'`,
@@ -125,22 +148,6 @@ function fetchCoursesStudent(ID) {
                 resolve(results);
             }
         }));
-}
-
-
-function unenrollCourse(RollNo, Course_ID) {
-    return new Promise((resolve, reject) => {
-        const query = `DELETE FROM Enrollement WHERE RollNo = ${RollNo} AND Course_ID = ${Course_ID} AND Year = ${new Date().getFullYear()}`;
-        db.query(query, (err, results) => {
-            if (err) {
-                console.error('Error querying Enrollement table:', err);
-                reject(err);
-            }
-            else {
-                resolve(1);
-            }
-        });
-    });
 }
 
 function removeStudents(ID) {
@@ -248,8 +255,8 @@ module.exports = {
     verifyStudentID,
     fetchStudents,
     addToProject,
+    unenrollProject,
     fetchCoursesStudent,
-    unenrollCourse,
     deleteCourse,
     getStudents
 };

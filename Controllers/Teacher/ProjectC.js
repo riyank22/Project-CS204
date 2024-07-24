@@ -10,22 +10,19 @@ exports.createProject = catchAsyncErrors(async (req, res) => {
         res.status(400).send("Bad Request");
     }
 
-    let {canJoin, projectDescription, totalGroups} = req.body;
+    let { canJoin, projectDescription, totalGroups } = req.body;
 
     console.log(projectDescription)
 
-    if(canJoin === undefined)
-    {
+    if (canJoin === undefined) {
         canJoin = 'Y';
     }
 
-    if(projectDescription === undefined)
-    {
+    if (projectDescription === undefined) {
         projectDescription = null;
     }
 
-    if(totalGroups === undefined)
-    {
+    if (totalGroups === undefined) {
         totalGroups = null;
     }
 
@@ -58,8 +55,7 @@ exports.getProjectDetails = catchAsyncErrors(async (req, res) => {
             res.status(500).send("Internal Server Error");
         }
     }
-    else
-    {
+    else {
         res.status(result.status).send(result.message);
     }
 });

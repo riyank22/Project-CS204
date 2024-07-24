@@ -6,9 +6,9 @@ const cookieParser = require('cookie-parser');
 const { createInviteNotification, createRequestNotificaiton, deleteNotification } = require('../queries/notification');
 const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
 const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
-const { joinProject, getProjectDetails } = require('../Controllers/Student/ProjectC');
+const { joinProject, getProjectDetails, leaveProject } = require('../Controllers/Student/ProjectC');
 const { getEnrolledStudentList, getGroups } = require('../Controllers/commonC');
-const { createGroup, joinGroupC, leaveGroupC } = require('../Controllers/Student/GroupC');
+const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/Student/GroupC');
 
 router.use(cookieParser());
 
@@ -26,6 +26,8 @@ router.route('/project/:Project_ID').get(getProjectDetails);
 
 router.route('/project/:Project_ID/viewParticpants').get(getEnrolledStudentList);
 
+router.route('/project/:Project_ID').delete(leaveProject);
+
 router.route('/project/:Project_ID/group').put(createGroup);
 
 router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
@@ -34,77 +36,11 @@ router.route('/project/:Project_ID/viewGroups').get(getGroups);
 
 router.route('/project/:Project_ID/group/:GID').delete(leaveGroupC);
 
-router.get('/Unenroll', (req, res) => {
-    const Course_ID = req.query.Course_ID;
-    const token = req.cookies.token;
-    const { id } = jwt.verify(token, 'alpha');
-    console.log(Course_ID);
-    console.log(id);
+router.route('/project/:Project_ID/group/:GID').patch(renameGroupC);
 
-    unenrollCourse(id, Course_ID).then(output => {
-        if (output == 1) {
-            res.redirect('/Student/Home?id=' + id)
-        }
-        else {
-            console.log(output)
-        }
-    })
-});
+router.route('/project/:Project_ID/group/:GID/removeMember').delete(removeMember);
 
-router.get('/Project', (req, res) => {
-    const { id } = jwt.verify(req.cookies.token, 'alpha');
-    console.log(req.cookies.token);
-    const Project_ID = req.query.id;
-    getProjectDetails(Project_ID).then(output => {
-        inTeam(Project_ID, id).then(team => {
-            if (team != -1) {
-                getTeamInfo(team).then(teamInfo => {
-                    if (id == teamInfo[0].Team_Lead) {
-                        res.render('Student/Project/Project-Team-L', {
-                            Project: output,
-                            Team_Name: teamInfo[0].Team_Name,
-                            Team_ID: teamInfo[0].id,
-                            Team: teamInfo
-                        });
-                    }
-                    else {
-                        res.render('Student/Project/Project-Team-M', {
-                            Project: output,
-                            Team_Name: teamInfo[0].Team_Name,
-                            Team_ID: teamInfo[0].id,
-                            Team: teamInfo
-                        });
-                    }
-                });
-            }
-            else {
-                res.render('Student/Project/Project-No-Team', {
-                    Project: output,
-                });
-            }
-        });
-    });
-});
-
-router.get('/Project/ViewAllTeams', (req, res) => {
-    const Project_ID = req.query.Project_ID;
-    getAllTeamsInfo(Project_ID).then(output => {
-        res.render('Student/Project/ViewAllTeams', {
-            Teams: output
-        });
-    });
-});
-
-router.get('/Project/DeleteTeam', (req, res) => {
-    deleteTeam(req.query.Team_ID).then(output => {
-        if (output != -1) {
-            res.redirect('/Student/Project?id=' + output);
-        }
-        else {
-            console.log(output);
-        }
-    });
-});
+router.route('/project/:Project_ID/group/:GID/changeLeader').patch(changeLeaderC);
 
 router.get('/Project/ViewPotentialMembers', (req, res) => {
     const Project_ID = req.query.Project_ID;

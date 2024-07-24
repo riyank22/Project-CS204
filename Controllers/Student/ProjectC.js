@@ -1,6 +1,6 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
 const { verifyUser } = require('../../Middlewares/verifyUser');
-const { addToProject, fetchProject } = require('../../queries/projectQuery');
+const { addToProject, fetchProject, unenrollProject } = require('../../queries/projectQuery');
 
 exports.joinProject = catchAsyncErrors(async (req, res) => {
     const { userID } = req;
@@ -43,3 +43,18 @@ exports.getProjectDetails = catchAsyncErrors(async (req, res) => {
         res.status(result.status).send(result.message);
     }
 });
+
+exports.leaveProject = catchAsyncErrors(async (req, res) => {
+    const { userID } = req;
+    const { Project_ID } = req.params;
+
+    const inProject = await verifyUser(req, res, Project_ID);
+
+    if (inProject.status !== 200) {
+        return res.status(inProject.status).send(inProject.message);
+    }
+
+    const result = await unenrollProject(userID, Project_ID);
+
+    return res.status(result.status).send(result.message);
+})

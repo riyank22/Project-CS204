@@ -19,9 +19,9 @@ async function inGroup(Project_ID, Student_ID) {
     const result = await dbQuery(`SELECT * FROM group_member WHERE Project_ID = ? AND Student_ID  = ?`, [Project_ID, Student_ID]);
 
     if (result.length > 0)
-        return {status:200 , message: "Already in a group", details:result[0]};
+        return { status: 200, message: "Already in a group", details: result[0] };
     else
-        return {status:404 , message: "Not in a group"};
+        return { status: 404, message: "Not in a group" };
 
 }
 
@@ -84,7 +84,7 @@ async function joinGroup(Project_ID, GID, Student_ID) {
     if (group.status === 500) {
         return { status: 500, message: "Internal Server Error" };
     }
-   
+
     if (group.lenght === 0) {
         return { status: 404, message: "Group Not Found or is not assciated with this project" };
     }
@@ -135,16 +135,14 @@ async function fetchgroups(Project_ID) {
 }
 
 async function leavegroup(GID, Student_ID, Role) {
-    if(Role === 'M')
-    {
+    if (Role === 'M') {
         const result = await dbQuery(`DELETE FROM group_member WHERE GID = ? AND Student_ID = ?`, [GID, Student_ID]);
         if (result.status === 500) {
             return { status: 500, message: "Internal Server Error" };
         }
         return { status: 200, message: "Left Group Successfully" };
     }
-    else if(Role === 'L')
-    {
+    else if (Role === 'L') {
         const result = await dbQuery(`DELETE FROM group_member WHERE GID = ?`, [GID]);
         if (result.status === 500) {
             return { status: 500, message: "Internal Server Error" };
@@ -155,6 +153,67 @@ async function leavegroup(GID, Student_ID, Role) {
         }
         return { status: 200, message: "Left Group Successfully" };
     }
+}
+
+async function renameGroup(Project_ID, oldGroupName, newGroupName) {
+    console.log(Project_ID, oldGroupName, newGroupName);
+    let result = await dbQuery(`SELECT GID FROM \`group\` WHERE Project_ID = ? AND Group_Name = ?`, [Project_ID, oldGroupName]);
+
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    console.log(result);
+
+    if (result.length === 0) {
+        return { status: 404, message: "Group Not Found" };
+    }
+
+    const gid = result[0].GID;
+
+    result = await dbQuery(`SELECT * FROM \`group\` WHERE Project_ID = ? AND Group_Name = ?`, [Project_ID, newGroupName]);
+
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    if (result.length !== 0) {
+        return { status: 409, message: "Group Name already exists, change Group Name." };
+    }
+
+    result = await dbQuery(`UPDATE \`group\` SET Group_Name = ? WHERE GID = ?`, [newGroupName, gid]);
+
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    return { status: 200, message: "Group Renamed Successfully" };
+}
+
+async function removeGroupMember(GID, Student_ID) {
+    const result = await dbQuery(`DELETE FROM group_member WHERE GID = ? AND Student_ID = ?`, [GID, Student_ID]);
+
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    return { status: 200, message: "Member Removed Successfully" };
+}
+
+async function changeLeader(GID, oldLeaderID, newLeaderID) {
+    const result = await dbQuery(`UPDATE group_member SET Role = 'M' WHERE GID = ? AND Student_ID = ?`, [GID, oldLeaderID]);
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    const result2 = await dbQuery(`UPDATE group_member SET Role = 'L' WHERE GID = ? AND Student_ID = ?`, [GID, newLeaderID]);
+
+    if (result2.status === 500) {
+        await dbQuery(`UPDATE group_member SET Role = 'L' WHERE GID = ? AND Student_ID = ?`, [GID, oldLeaderID]);
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    return { status: 200, message: "Leader Changed Successfully" };
 }
 
 function getTeamInfo(Team_ID) {
@@ -184,33 +243,6 @@ function getTeamID(Project_ID, RollNo) {
             }
         });
     });
-}
-
-function viewTeams(Project_ID) {
-    const query = `SELECT * FROM Team WHERE Project_ID = ${Project_ID};`
-    return new Promise((resolve, reject) => db.query(query,
-        (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                resolve(results);
-            }
-        }));
-}
-
-function getTeamSize(Project_ID) {
-    return new Promise((resolve, reject) => db.query(`SELECT Max_Students, Min_Students FROM project WHERE Project_ID = ?`,
-        [Project_ID], (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                resolve(results[0]);
-            }
-        }));
 }
 
 function getProjectID(Team_ID) {
@@ -296,6 +328,8 @@ module.exports = {
     fetchgroups,
     inGroup,
     leavegroup,
-    viewTeams,
+    renameGroup,
+    removeGroupMember,
+    changeLeader,
     deleteTeam, getNonTeamStudent, getProjectID, getTeamID
 }

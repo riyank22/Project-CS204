@@ -18,10 +18,10 @@ async function verifyUser(req, res, Project_ID) {
     }
 
     if (output.status === 404) {
-        return { status: 404, message: "Project Not Found"};
+        return { status: 404, message: "Project Not Found" };
     }
     else {
-        return { status: 403, message : "Forbidden"};
+        return { status: 403, message: "Forbidden" };
     }
 }
 
