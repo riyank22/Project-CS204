@@ -104,8 +104,16 @@ async function joinGroup(Project_ID, GID, Student_ID) {
     return { status: 200, message: "Joined Group Successfully" };
 };
 
-async function fetchgroups(Project_ID) {
-    const result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ?`, [Project_ID]);
+async function fetchgroups(Project_ID, GID) {
+    let result;
+    if(GID === undefined)
+    {
+        result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ?`, [Project_ID]);
+    }
+    else
+    {
+        result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ? and GID = ?`, [Project_ID, GID]);
+    }
 
     if (result.status === 500) {
         return { status: 500, message: "Internal Server Error" };
@@ -116,7 +124,7 @@ async function fetchgroups(Project_ID) {
     let currentGID = null
 
     for (const obj of result) {
-        const member = { FName: obj.FName, LName: obj.LName, Student_ID: obj.Student_ID }
+        const member = { FName: obj.FName, LName: obj.LName, Student_ID: obj.Student_ID, Role:obj.Role }
         if (currentGID === null || currentGID !== obj.GID) {
             if (currentGID !== null) {
                 groups.push(currentGroup)
@@ -216,17 +224,15 @@ async function changeLeader(GID, oldLeaderID, newLeaderID) {
     return { status: 200, message: "Leader Changed Successfully" };
 }
 
-function getTeamInfo(Team_ID) {
-    const query = `SELECT * FROM Team_Member JOIN student on student.RollNo = Team_Member.RollNo join Team on Team.id = Team_Member.Team_ID WHERE Team_ID = ${Team_ID} ORDER BY role DESC`
-    return new Promise((resolve, reject) => db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error querying group table:', err);
-            reject(err);
-        }
-        else {
-            resolve(results);
-        }
-    }));
+async function getGroupInfo(Project_ID, Group_ID) {
+    const result = await fetchgroups(Project_ID, Group_ID);
+
+    if(result.status === 500)
+    {
+        return {status:500, message: "Internal Server Error"};
+    }
+    
+    return {status:200, group: result.groups[0]};
 }
 
 function getTeamID(Project_ID, RollNo) {
@@ -331,5 +337,6 @@ module.exports = {
     renameGroup,
     removeGroupMember,
     changeLeader,
+    getGroupInfo,
     deleteTeam, getNonTeamStudent, getProjectID, getTeamID
 }

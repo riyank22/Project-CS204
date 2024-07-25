@@ -7,7 +7,7 @@ const { createInviteNotification, createRequestNotificaiton, deleteNotification 
 const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
 const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
 const { joinProject, getProjectDetails, leaveProject } = require('../Controllers/Student/ProjectC');
-const { getEnrolledStudentList, getGroups } = require('../Controllers/commonC');
+const { getEnrolledStudentList, getGroups, fetchGroupDetails } = require('../Controllers/commonC');
 const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/Student/GroupC');
 
 router.use(cookieParser());
@@ -30,9 +30,11 @@ router.route('/project/:Project_ID').delete(leaveProject);
 
 router.route('/project/:Project_ID/group').put(createGroup);
 
-router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
-
 router.route('/project/:Project_ID/viewGroups').get(getGroups);
+
+router.route('/project/:Project_ID/group/:GID').get(fetchGroupDetails);
+
+router.route('/project/:Project_ID/group/:GID').post(joinGroupC);
 
 router.route('/project/:Project_ID/group/:GID').delete(leaveGroupC);
 

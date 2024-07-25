@@ -6,7 +6,7 @@ const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtToke
 const cookieParser = require('cookie-parser');
 const { createProject, getProjectDetails } = require('../Controllers/Teacher/ProjectC');
 const { verifyUser } = require('../Middlewares/verifyUser');
-const { getEnrolledStudentList } = require('../Controllers/commonC');
+const { getEnrolledStudentList, fetchGroupDetails, getGroups } = require('../Controllers/commonC');
 const router = express.Router();
 
 router.use(cookieParser());
@@ -24,6 +24,10 @@ router.route('/project').put(createProject);
 router.route('/project/:Project_ID').get(getProjectDetails);
 
 router.route('/project/:Project_ID/viewParticpants').get(getEnrolledStudentList);
+
+router.route('/project/:Project_ID/viewGroups').get(getGroups);
+
+router.route('/project/:Project_ID/group/:GID').get(fetchGroupDetails);
 
 router.get('/ViewNonTeamStudents', (req, res) => {
     const Project_ID = req.query.Project_ID;
