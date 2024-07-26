@@ -106,12 +106,10 @@ async function joinGroup(Project_ID, GID, Student_ID) {
 
 async function fetchgroups(Project_ID, GID) {
     let result;
-    if(GID === undefined)
-    {
+    if (GID === undefined) {
         result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ?`, [Project_ID]);
     }
-    else
-    {
+    else {
         result = await dbQuery(`SELECT * FROM group_with_groupmembers WHERE Project_ID = ? and GID = ?`, [Project_ID, GID]);
     }
 
@@ -124,7 +122,7 @@ async function fetchgroups(Project_ID, GID) {
     let currentGID = null
 
     for (const obj of result) {
-        const member = { FName: obj.FName, LName: obj.LName, Student_ID: obj.Student_ID, Role:obj.Role }
+        const member = { FName: obj.FName, LName: obj.LName, Student_ID: obj.Student_ID, Role: obj.Role }
         if (currentGID === null || currentGID !== obj.GID) {
             if (currentGID !== null) {
                 groups.push(currentGroup)
@@ -227,43 +225,34 @@ async function changeLeader(GID, oldLeaderID, newLeaderID) {
 async function getGroupInfo(Project_ID, Group_ID) {
     const result = await fetchgroups(Project_ID, Group_ID);
 
-    if(result.status === 500)
-    {
-        return {status:500, message: "Internal Server Error"};
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
     }
-    
-    return {status:200, group: result.groups[0]};
+
+    return { status: 200, group: result.groups[0] };
 }
 
-function getTeamID(Project_ID, RollNo) {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT Team_ID FROM Team_Member tm
-        JOIN Team t on t.id = tm.Team_ID WHERE Project_ID = ${Project_ID} AND RollNo = ${RollNo}`, (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                console.log(results[0].Team_ID);
-                resolve(results[0].Team_ID);
-            }
-        });
-    });
+async function getNonGroupStudent(Project_ID) {
+    const result = await dbQuery(`SELECT s.Fname, s.LName, s.userID from enrollement e join student s on s.userID= e.Student_ID
+    where Project_ID= ? and e.Student_ID not in ( SELECT Student_ID from group_member gm join \`group\` g on g.GID = gm.GID where g.Project_ID = ?)`, [Project_ID, Project_ID]);
+
+    if (result.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    return { status: 200, students: result };
+
 }
 
-function getProjectID(Team_ID) {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT Project_ID FROM Team WHERE id = ?`, [Team_ID], (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                resolve(results[0].Project_ID);
-            }
-        });
-    });
-}
+async function getVacantGroups(Project_ID) {
+    const groups = await dbQuery(`SELECT GID, Group_Name, Capacity_Left FROM \`group\` WHERE Project_ID = ? and Capacity_Left <> 0`, [Project_ID]);
+
+    if (groups.status === 500) {
+        return { status: 500, message: "Internal Server Error" };
+    }
+
+    return { status: 200, groups: groups };
+};
 
 function deleteTeam(Team_ID) {
     return new Promise((resolve, reject) => {
@@ -289,44 +278,6 @@ function deleteTeam(Team_ID) {
     });
 }
 
-function getCourseID(Project_ID) {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT Course_ID FROM project WHERE Project_ID = ?`, [Project_ID], (err, results) => {
-            if (err) {
-                console.error('Error querying group table:', err);
-                reject(err);
-            }
-            else {
-                resolve(results[0].Course_ID);
-            }
-        });
-    });
-}
-
-function getNonTeamStudent(Project_ID) {
-    return new Promise((resolve, reject) => {
-        getCourseID(Project_ID).then(Course_ID => {
-            const query = `SELECT e.RollNo,FName, LName from Enrollement e
-        join student s on s.RollNo = e.RollNo
-        where Course_ID = ${Course_ID}
-        and e.RollNo not in (
-        SELECT RollNo from Team_Member tm
-        join Team t on t.id = tm.Team_ID
-        where Project_ID = ${Project_ID});`
-            db.query(query, (err, results) => {
-                if (err) {
-                    console.error('Error querying group table:', err);
-                    reject(err);
-                }
-
-                else {
-                    resolve(results);
-                }
-            });
-        })
-    });
-}
-
 module.exports = {
     canEditAfterDeadline,
     insertGroup,
@@ -338,5 +289,7 @@ module.exports = {
     removeGroupMember,
     changeLeader,
     getGroupInfo,
-    deleteTeam, getNonTeamStudent, getProjectID, getTeamID
+    getNonGroupStudent,
+    getVacantGroups,
+    deleteTeam
 }

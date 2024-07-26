@@ -1,12 +1,10 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 
 const { fetchProfile, loadHomePage } = require('../Controllers/Teacher/homeC');
 const { authenticateToken, validateUserTypeT } = require('../Middlewares/jwtTokenVerifer');
 const cookieParser = require('cookie-parser');
 const { createProject, getProjectDetails } = require('../Controllers/Teacher/ProjectC');
-const { verifyUser } = require('../Middlewares/verifyUser');
-const { getEnrolledStudentList, fetchGroupDetails, getGroups } = require('../Controllers/commonC');
+const { getEnrolledStudentList, fetchGroupDetails, getGroups, fetchNonGroupStudents, fetchVacantGroups } = require('../Controllers/commonC');
 const router = express.Router();
 
 router.use(cookieParser());
@@ -29,80 +27,9 @@ router.route('/project/:Project_ID/viewGroups').get(getGroups);
 
 router.route('/project/:Project_ID/group/:GID').get(fetchGroupDetails);
 
-router.get('/ViewNonTeamStudents', (req, res) => {
-    const Project_ID = req.query.Project_ID;
-    getNonTeamStudent(Project_ID).then(output => {
-        res.render('Teacher/Projects/ViewNonTeamStudents', {
-            Project_ID: Project_ID,
-            Students: output
-        });
-    });
-});
+router.route('/project/:Project_ID/viewNonGroupStudents').get(fetchNonGroupStudents);
 
-router.get('/ViewTeams', (req, res) => {
-    const Project_ID = req.query.Project_ID;
-    viewTeams(Project_ID).then(output => {
-        res.render('Teacher/Projects/ViewTeams', {
-            Project_ID: Project_ID,
-            Teams: output
-        });
-    });
-});
-
-router.get('/ViewTeamMembers', (req, res) => {
-    const Team_ID = req.query.Team_ID;
-    getTeamInfo(Team_ID).then(output => {
-        res.render('Teacher/Projects/ViewTeamMembers', {
-            Team: output,
-            Team_Name: output[0].Team_Name
-        });
-    });
-});
-
-router.get('/DeleteCourse', (req, res) => {
-    const Course_Id = req.query.Course_ID;
-    const token = req.cookies.token;
-    console.log(token);
-    const ou = jwt.verify(token, 'alpha');
-    console.log(Course_Id);
-    console.log(ou);
-    const id = ou.id;
-    deleteCourse(Course_Id).then(output => {
-        if (output == 1) {
-            res.redirect('/Teacher/Home?id=' + id);
-        }
-        else {
-            console.log(output);
-        }
-    });
-})
-
-router.get('/CreateProject', (req, res) => {
-    res.render('Teacher/CreateProject', {
-        id: req.query.id
-    });
-});
-
-router.post('/CreateProject', (req, res) => {
-    const { Course_Code, ProjectName, MaxStudent, MinStudent, date } = req.body;
-    createProject(Course_Code, ProjectName, date, MaxStudent, MinStudent).then(output => {
-        if (output == 1) {
-            res.redirect('/Teacher/Course?id=' + Course_Code);
-        }
-        else {
-            console.log(output);
-        }
-    });
-});
-
-router.get('/ViewProject', (req, res) => {
-    const Project_ID = req.query.Project_ID;
-    getProjectDetails(Project_ID).then(output => {
-        res.render('Teacher/ViewProject', {
-            Project: output
-        });
-    });
-});
+router.route('/project/:Project_ID/viewVacantGroups').get(fetchVacantGroups);
 
 router.get('/Project/DeleteProject', (req, res) => {
     const Project_ID = req.query.Project_ID;
