@@ -1,25 +1,32 @@
-const { verifyToken } = require("../utils/jwt");
+const { verifyToken } = require("../config/jwt");
 
 function authenticateToken(req, res, next) {
-    const { token } = req.cookies;
 
-    if (token == undefined || token == null) {
+    if(!req.body)
+    {
+        console.log("[DEBUG] Request body not found");
+        return res.status(400).send("Broken request");
+    }
+
+    const token  = req.headers.authorization;
+
+    if (!token) {
+        console.log("[DEBUG] Token not found in headers");
         return res.status(401).send("Please Login to access the page")
     }
 
-    const decoded = verifyToken(token);
+    const decoded = verifyToken(token.split(' ')[1]);
 
-    if (decoded.status === 400) {
+    if (decoded.decoded === false) {
         return res.status(400).send("Your session has expired. Please login again");
     }
 
-    if (decoded.emailID === undefined || decoded.userType === undefined || decoded.userID === undefined) {
-        return res.status(400).send("Bad Request");
+    if (!decoded.email || !decoded.userId) {
+        return res.status(400).send("Token is not valid or has expired");
     }
 
-    req.emailID = decoded.emailID;
-    req.userType = decoded.userType;
-    req.userID = decoded.userID;
+    req.email = decoded.email;
+    req.userId = decoded.userId;
 
     next();
 }
