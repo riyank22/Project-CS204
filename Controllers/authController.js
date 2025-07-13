@@ -118,6 +118,10 @@ exports.registerUserController = async (req, res) => {
 
 exports.changePasswordController = async (req, res) => {
     console.log("[DEBUG] change password controller");
+    if(!req.body) {
+        console.log("[DEBUG] Request body not found");
+        return res.status(400).send({message: "Broken request", auth: false});
+    }
     const {oldPassword, newPassword} = req.body;
 
     if (!oldPassword || !newPassword) {

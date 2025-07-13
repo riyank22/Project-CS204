@@ -1,5 +1,5 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
-const { verifyDate } = require('../../Middlewares/verifyDate');
+const { verifyDate } = require('../../Middlewares/verifyProjectOwnership');
 const { verifyGroup } = require('../../Middlewares/verifyGroup');
 const { verifyUser } = require('../../Middlewares/verifyUser');
 const { insertGroup, joinGroup, leavegroup, renameGroup, removeGroupMember, changeLeader } = require('../../queries/groupQuery');

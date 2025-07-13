@@ -2,17 +2,11 @@ const { verifyToken } = require("../config/jwt");
 
 function authenticateToken(req, res, next) {
 
-    if(!req.body)
-    {
-        console.log("[DEBUG] Request body not found");
-        return res.status(400).send("Broken request");
-    }
-
     const token  = req.headers.authorization;
 
     if (!token) {
         console.log("[DEBUG] Token not found in headers");
-        return res.status(401).send("Please Login to access the page")
+        return res.status(401).send("Token not found Please Login to access the page")
     }
 
     const decoded = verifyToken(token.split(' ')[1]);

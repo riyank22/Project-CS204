@@ -1,7 +1,5 @@
 const catchAsyncErrors = require("../Middlewares/catchAsyncErrors");
 const { verifyUser } = require("../Middlewares/verifyUser");
-const { fetchgroups, getGroupInfo, getNonGroupStudent, getVacantGroups } = require("../queries/groupQuery");
-const { fetchStudents } = require("../queries/projectQuery");
 
 exports.getEnrolledStudentList = catchAsyncErrors(async (req, res) => {
     const { Project_ID } = req.params;

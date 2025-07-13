@@ -3,10 +3,10 @@ const router = express.Router();
 const cookieParser = require('cookie-parser');
 
 const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtTokenVerifer');
-const { fetchProfile, loadHomePage } = require('../Controllers/Student/homeC');
-const { joinProject, getProjectDetails, leaveProject } = require('../Controllers/Student/ProjectC');
+const { fetchProfile, loadHomePage } = require('../Controllers/User/homeC');
+const { joinProject, getProjectDetails, leaveProject } = require('../Controllers/User/projectControllerUser');
 const { getEnrolledStudentList, getGroups, fetchGroupDetails, fetchNonGroupStudents, fetchVacantGroups } = require('../Controllers/commonC');
-const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/Student/GroupC');
+const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/User/GroupC');
 
 router.use(cookieParser());
 

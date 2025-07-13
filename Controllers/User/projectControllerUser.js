@@ -1,6 +1,5 @@
 const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
 const { verifyUser } = require('../../Middlewares/verifyUser');
-const { addToProject, fetchProject, unenrollProject } = require('../../queries/projectQuery');
 
 exports.joinProject = catchAsyncErrors(async (req, res) => {
     const { userID } = req;
