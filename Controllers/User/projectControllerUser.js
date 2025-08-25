@@ -1,29 +1,114 @@
-const catchAsyncErrors = require('../../Middlewares/catchAsyncErrors');
-const { verifyUser } = require('../../Middlewares/verifyUser');
+const {prisma} = require("../../config/db");
 
-exports.joinProject = catchAsyncErrors(async (req, res) => {
-    const { userID } = req;
-    const { Project_ID } = req.params;
+exports.joinProject = async (req, res) => {
+    const { user, project } = req;
+    const userID = user.id;
 
-    const result = await addToProject(Project_ID, userID);
-    if (result.status === 200) {
-        res.status(200).send("Joined Project Successfully");
+    if(!project.entry){
+        console.log("[INFO] Project does not allow for new entries of members." + project.id);
+        return res.status(403).send({
+            message: "Project does not allow new entries of members.",
+            project: null,
+            success: false
+        });
     }
-    else if (result.status === 404) {
-        res.status(404).send("Project Not Found");
-    }
-    else if (result.status === 403) {
-        res.status(403).send("Project is Closed for Joining");
-    }
-    else if (result.status === 409) {
-        res.status(409).send("Already Joined Project");
-    }
-    else {
-        res.status(500).send("Internal Server Error");
-    }
-});
 
-exports.getProjectDetails = catchAsyncErrors(async (req, res) => {
+    try{
+
+        if(project.owner_id === userID){
+            console.log("[INFO] User is the owner of the project with id :" + project.id);
+            return res.status(200).send({
+                message: "Owner can not enroll in the same project",
+                project: {
+                    id: project.uuid,
+                    name: project.name,
+                    visibility: project.visibility,
+                    entry: project.entry,
+                    max_capacity: project.max_capacity,
+                    min_capacity: project.min_capacity,
+                    max_group: project.max_group,
+                    deadline: project.deadline,
+                    created_at: project.created_at,
+                    updated_at: project.updated_at,
+                    created_by: JSON.parse(project.created_by),
+                },
+                success: false
+            });
+        }
+
+        const isAlreadyEnrolled = await prisma.project_enrollments.findFirst({
+            where: {
+                user_id: userID,
+                project_id: project.id
+            }
+        });
+
+        if(isAlreadyEnrolled){
+            console.log("[INFO] User already enrolled in the project with id :" + project.id);
+            return res.status(200).send({
+                message: "User already enrolled in the project",
+                project: {
+                    id: project.uuid,
+                    name: project.name,
+                    visibility: project.visibility,
+                    entry: project.entry,
+                    max_capacity: project.max_capacity,
+                    min_capacity: project.min_capacity,
+                    max_group: project.max_group,
+                    deadline: project.deadline,
+                    created_at: project.created_at,
+                    updated_at: project.updated_at,
+                    created_by: JSON.parse(project.created_by),
+                },
+                success: false
+            });
+        }
+
+        const enrollment = await prisma.project_enrollments.create({
+            data: {
+                user_id: userID,
+                project_id: project.id
+            }
+        });
+
+        if(!enrollment){
+            console.log("[INFO] Unable to enroll user in the project with id :" + project.id);
+            return res.status(500).send({
+                message: "Internal Server Error: Unable to enroll in project",
+                project: null,
+                success: false
+            });
+        }
+
+        console.log("[INFO] User enrolled in the project with id :" + project.id);
+        return res.status(200).send({
+            message: "User enrolled in the project successfully",
+            project: {
+                id: project.uuid,
+                name: project.name,
+                visibility: project.visibility,
+                entry: project.entry,
+                max_capacity: project.max_capacity,
+                min_capacity: project.min_capacity,
+                max_group: project.max_group,
+                deadline: project.deadline,
+                created_at: project.created_at,
+                updated_at: project.updated_at,
+                created_by: JSON.parse(project.created_by),
+            },
+            success: true
+        });
+        }
+    catch (error){
+        console.error("[ERROR] Error in adding to the project:", error);
+        res.status(500).send({
+            message: "Internal Server Error",
+            success: false
+        });
+    }
+};
+
+exports.getProjectDetails = async (req, res) => {
     const { Project_ID } = req.params;
     if (Project_ID === undefined) {
         res.status(400).send("Bad Request");
@@ -41,9 +126,9 @@ exports.getProjectDetails = catchAsyncErrors(async (req, res) => {
     else {
         res.status(result.status).send(result.message);
     }
-});
+};
 
-exports.leaveProject = catchAsyncErrors(async (req, res) => {
+exports.leaveProject = async (req, res) => {
     const { userID } = req;
     const { Project_ID } = req.params;
 
@@ -56,4 +141,4 @@ exports.leaveProject = catchAsyncErrors(async (req, res) => {
     const result = await unenrollProject(userID, Project_ID);
 
     return res.status(result.status).send(result.message);
-})
+}

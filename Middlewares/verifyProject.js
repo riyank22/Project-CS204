@@ -1,9 +1,8 @@
 const {prisma} = require('../config/db');
 
-exports.verifyProjectOwnership = async (req, res, next) => {
+exports.verifyProject = async (req, res, next) => {
     try {
         const projectId = req.params.project_ID;
-        const userId = req.user.id;
 
         if (!projectId) {
             return res.status(400).send({ message: "Project ID is required", success:false });
@@ -17,15 +16,11 @@ exports.verifyProjectOwnership = async (req, res, next) => {
             return res.status(404).send({ message: "Project not found" });
         }
 
-        if (project.owner_id !== userId) {
-            return res.status(403).send({ message: "You do not have permission to access this project" });
-        }
-
         req.project = project;
-        console.log("[INFO] Project ownership verified for project ID:", projectId);
+        console.log("[INFO] Project details retried successfully:", projectId);
         next();
     } catch (error) {
-        console.error("[ERROR] Error verifying project ownership:", error);
+        console.error("[ERROR] Error retrieving project details:", error);
         return res.status(500).send({ message: "Internal server error" });
     }
 }
