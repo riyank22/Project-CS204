@@ -138,7 +138,7 @@
 //     const { removeUserID } = req.body;
 //
 //     if (removeUserID === undefined) {
-//         return res.status(400).send('Please provide the user ID to remove');
+//         return res.status(400).send('Please provide the User ID to remove');
 //     }
 //
 //     if (removeUserID === userID) {
@@ -170,7 +170,7 @@
 //     result = await verifyGroup(removeUserID, Project_ID, GID);
 //
 //     if (result.status !== 200) {
-//         return res.status(result.status).send("The user you are trying to remove is not a part of the groups");
+//         return res.status(result.status).send("The User you are trying to remove is not a part of the groups");
 //     }
 //
 //     const output = await removeGroupMember(GID, removeUserID);
@@ -217,7 +217,7 @@
 //     result = await verifyGroup(newLeaderID, Project_ID, GID);
 //
 //     if (result.status !== 200) {
-//         return res.status(result.status).send("The user you are trying to make the leader is not a part of the groups");
+//         return res.status(result.status).send("The User you are trying to make the leader is not a part of the groups");
 //     }
 //
 //     const output = await changeLeader(GID, userID, newLeaderID);

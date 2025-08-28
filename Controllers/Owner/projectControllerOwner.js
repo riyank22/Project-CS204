@@ -102,7 +102,7 @@ exports.getProjectList = async (req, res) => {
     try {
         const user = req.user;
 
-        console.log("[INFO] Fetching project list for user ID:", user.id);
+        console.log("[INFO] Fetching project list for User ID:", user.id);
 
         const projects = await prisma.projects.findMany({
             where: {
@@ -114,7 +114,7 @@ exports.getProjectList = async (req, res) => {
         });
 
         if (!projects || projects.length === 0) {
-            console.log("[INFO] No projects found for user ID:", user.id);
+            console.log("[INFO] No projects found for User ID:", user.id);
             return res.status(200).send({
                 message: "No projects found",
                 success: true,
@@ -122,7 +122,7 @@ exports.getProjectList = async (req, res) => {
             });
         }
 
-        console.log("[INFO] Fetched", projects.length, "projects for user ID:", user.id);
+        console.log("[INFO] Fetched", projects.length, "projects for User ID:", user.id);
 
         // Format the projects to include only necessary fields
         const result = projects.map(project => ({
@@ -141,43 +141,10 @@ exports.getProjectList = async (req, res) => {
             projects: result
         });
     } catch (error) {
-        console.error("[ERROR] Error fetching project list for user ID:", error);
+        console.error("[ERROR] Error fetching project list for User ID:", error);
         res.status(500).send({
             message: "Internal Server Error",
             success: false
         });
     }
 }
-
-exports.getProjectDetails = async (req, res) => {
-    try {
-        const project = req.project;
-
-        console.log("[INFO] Project details for project ID:", project.id);
-
-        res.status(200).send({
-            message: "Project details fetched successfully",
-            success: true,
-            project: {
-                id: project.uuid,
-                name: project.name,
-                visibility: project.visibility,
-                entry: project.entry,
-                max_capacity: project.max_capacity,
-                min_capacity: project.min_capacity,
-                max_group: project.max_group,
-                deadline: project.deadline,
-                created_at: project.created_at,
-                updated_at: project.updated_at,
-                created_by: JSON.parse(project.created_by),
-            },
-        });
-    }
-    catch (error) {
-        console.log("[ERROR] Fetching project details for project ID:", error);
-        res.status(500).send({
-            message: "Internal Server Error",
-            success: false
-        });
-    }
-};

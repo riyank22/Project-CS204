@@ -9,30 +9,32 @@ datasource db {
 }
 
 model users {
-  id         Int        @id @default(autoincrement())
-  name       String     @db.VarChar(128)
-  email      String?    @unique(map: "email_UNIQUE") @db.VarChar(256)
-  password   String?    @db.VarChar(256)
-  created_at DateTime   @default(now()) @db.Timestamp(0)
-  updated_at DateTime   @default(now()) @db.Timestamp(0)
-  projects   projects[]
+  id                  Int                   @id @default(autoincrement())
+  name                String                @db.VarChar(128)
+  email               String?               @unique(map: "email_UNIQUE") @db.VarChar(256)
+  password            String?               @db.VarChar(256)
+  created_at          DateTime              @default(now()) @db.Timestamp(0)
+  updated_at          DateTime              @default(now()) @db.Timestamp(0)
+  project_enrollments project_enrollments[]
+  projects            projects[]
 }
 
 model projects {
-  id           Int      @id @default(autoincrement())
-  uuid         String   @unique(map: "code_UNIQUE") @default(dbgenerated("(uuid())")) @db.Char(36)
-  name         String   @db.VarChar(128)
-  visibility   Boolean  @default(false)
-  entry        Boolean  @default(false)
-  created_by   Json
-  owner_id     Int
-  max_capacity Int
-  min_capacity Int
-  max_group    Int?
-  deadline     DateTime @db.DateTime(0)
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
-  users        users    @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_project_owner")
+  id                  Int                   @id @default(autoincrement())
+  uuid                String                @unique(map: "code_UNIQUE") @default(dbgenerated("(uuid())")) @db.Char(36)
+  name                String                @db.VarChar(128)
+  visibility          Boolean               @default(false)
+  entry               Boolean               @default(false)
+  created_by          Json
+  owner_id            Int
+  max_capacity        Int
+  min_capacity        Int
+  max_group           Int?
+  deadline            DateTime              @db.DateTime(0)
+  created_at          DateTime              @default(now()) @db.Timestamp(0)
+  updated_at          DateTime              @default(now()) @db.Timestamp(0)
+  project_enrollments project_enrollments[]
+  users               users                 @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_project_owner")
 
   @@index([owner_id], map: "fk_project_owner")
 }
@@ -42,6 +44,9 @@ model project_enrollments {
   user_id     Int
   project_id  Int
   enrolled_at DateTime @default(now()) @db.Timestamp(0)
+  projects    projects @relation(fields: [project_id], references: [id], onDelete: Cascade, map: "fk_project")
+  users       users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user")
 
   @@unique([user_id, project_id], map: "unique_user_project")
+  @@index([project_id], map: "fk_project")
 }

@@ -16,7 +16,7 @@ exports.joinProject = async (req, res) => {
     try{
 
         if(project.owner_id === userID){
-            console.log("[INFO] User is the owner of the project with id :" + project.id);
+            console.log("[INFO] User is the Owner of the project with id :" + project.id);
             return res.status(200).send({
                 message: "Owner can not enroll in the same project",
                 project: {
@@ -72,7 +72,7 @@ exports.joinProject = async (req, res) => {
         });
 
         if(!enrollment){
-            console.log("[INFO] Unable to enroll user in the project with id :" + project.id);
+            console.log("[INFO] Unable to enroll User in the project with id :" + project.id);
             return res.status(500).send({
                 message: "Internal Server Error: Unable to enroll in project",
                 project: null,
@@ -108,26 +108,6 @@ exports.joinProject = async (req, res) => {
     }
 };
 
-exports.getProjectDetails = async (req, res) => {
-    const { Project_ID } = req.params;
-    if (Project_ID === undefined) {
-        res.status(400).send("Bad Request");
-    }
-    const result = await verifyUser(req, res, Project_ID);
-    if (result.status === 200) {
-        const output = await fetchProject(Project_ID);
-        if (output.status === 200) {
-            res.status(200).send(output);
-        }
-        else {
-            res.status(500).send("Internal Server Error");
-        }
-    }
-    else {
-        res.status(result.status).send(result.message);
-    }
-};
-
 exports.leaveProject = async (req, res) => {
     const { userID } = req;
     const { Project_ID } = req.params;
@@ -141,4 +121,62 @@ exports.leaveProject = async (req, res) => {
     const result = await unenrollProject(userID, Project_ID);
 
     return res.status(result.status).send(result.message);
+}
+
+exports.getEnrolledProjectList = async (req, res) => {
+    const userID = req.user.id;
+
+    try {
+        const projects = await prisma.projects.findMany({
+            where: {
+                project_enrollments: {
+                    some: { user_id: userID },
+                },
+            },
+            select: {
+                name: true,
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+
+        console.log("[INFO] Fetched project list for user with id :" + userID);
+        return res.status(200).send({
+            message: "Project list fetched successfully",
+            projects: projects,
+            success: true
+        });
+    } catch (error) {
+        console.error("[ERROR] Error in fetching project list:", error);
+        return res.status(500).send({
+            message: "Internal Server Error",
+            projects: [],
+            success: false
+        });
+    }
+}
+
+exports.getPublicProjects = async (req, res) => {
+    try{
+        const projects = await prisma.projects.findMany({
+            where: {
+                visibility: true
+            }
+        });
+        console.log("[INFO] Fetched public projects");
+        return res.status(200).send({
+            message: "Public projects fetched successfully",
+            projects: projects,
+            success: true
+        });
+    }
+    catch (error){
+        console.error("[ERROR] Error in fetching public projects:", error);
+        return res.status(500).send({
+            message: "Internal Server Error",
+            projects: [],
+            success: false
+        });
+    }
 }

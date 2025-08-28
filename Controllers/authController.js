@@ -28,7 +28,7 @@ exports.loginController = async (req, res) => {
         const storedPasswordHash = user.password;
 
         if(!bcrypt.compare(password, storedPasswordHash)) {
-            console.log("[DEBUG] Password not match for user " + email)
+            console.log("[DEBUG] Password not match for User " + email)
             return res.status(401).send({message: "Invalid Password", auth: false});
         }
 
@@ -87,20 +87,20 @@ exports.registerUserController = async (req, res) => {
             });
 
         if (!newUser) {
-            console.log("[DEBUG] Not able to create user for email: " + email);
+            console.log("[DEBUG] Not able to create User for email: " + email);
             return res.status(500).send({message: 'User registration failed', auth: false});
         }
-        console.log("[DEBUG] New user created: " + newUser.email);
+        console.log("[DEBUG] New User created: " + newUser.email);
 
 
         if (!newUser) {
-            console.log("[DEBUG] Not able to create user for email: " + email);
+            console.log("[DEBUG] Not able to create User for email: " + email);
             return res.status(500).send({message: 'User registration failed', auth: false});
         }
 
         const token = generateToken(newUser.email, newUser.id);
         if (!token) {
-            console.log("[DEBUG] Token not generated for user: " + newUser.email);
+            console.log("[DEBUG] Token not generated for User: " + newUser.email);
             return res.status(401).send({message: "Not able to generate the token", auth: false});
         }
 
@@ -110,7 +110,7 @@ exports.registerUserController = async (req, res) => {
             name: newUser.name,
             }, token: `Bearer ${token}`});
     } catch (error) {
-        console.log("[WARNING] Not able to register user at authRoutes.js file");
+        console.log("[WARNING] Not able to register User at authRoutes.js file");
         console.error(error);
         return res.status(500).send({message: error.message, auth: false});
     }
@@ -139,12 +139,12 @@ exports.changePasswordController = async (req, res) => {
         const isOldPasswordValid = await bcrypt.compare(oldPassword, req.user.password);
 
         if (!isOldPasswordValid) {
-            console.log("[DEBUG] Old password is invalid for user: " + req.email);
+            console.log("[DEBUG] Old password is invalid for User: " + req.email);
             return res.status(401).send({message: "Invalid old password", auth: false});
         }
 
         const newHashedPassword = await bcrypt.hash(newPassword, 10);
-        console.log("[DEBUG] New password hashed for user: " + req.email);
+        console.log("[DEBUG] New password hashed for User: " + req.email);
         await prisma.users.update(
             {
                 where: { email: req.email },
@@ -152,11 +152,11 @@ exports.changePasswordController = async (req, res) => {
             }
         )
 
-        console.log("[INFO] Password changed successfully for user: " + req.email);
+        console.log("[INFO] Password changed successfully for User: " + req.email);
         return res.status(200).send({message: "Password changed successfully", auth:true});
     }
     catch (error) {
-        console.log("[WARNING] Error changing password for user: " + req.email);
+        console.log("[WARNING] Error changing password for User: " + req.email);
         console.error(error);
         return res.status(500).send("Error changing password");
     }

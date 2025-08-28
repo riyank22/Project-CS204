@@ -1,4 +1,4 @@
-//Verfiiy the user if he is a teacher or student as well as he is in the project or not.
+//Verfiiy the User if he is a teacher or student as well as he is in the project or not.
 const { prisma } = require("../config/db");
 
 exports.verifyUser = async (req, res, next) => {
