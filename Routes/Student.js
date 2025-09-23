@@ -6,7 +6,7 @@ const { authenticateToken, validateUserTypeS } = require('../Middlewares/jwtToke
 const { fetchProfile, loadHomePage } = require('../Controllers/User/homeC');
 const { joinProject, getProjectDetails, leaveProject } = require('../Controllers/User/projectControllerUser');
 const { getEnrolledStudentList, getGroups, fetchGroupDetails, fetchNonGroupStudents, fetchVacantGroups } = require('../Controllers/projectControllerCommon');
-const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/User/GroupC');
+const { createGroup, joinGroupC, leaveGroupC, renameGroupC, removeMember, changeLeaderC } = require('../Controllers/User/groupControllerUser');
 
 router.use(cookieParser());
 

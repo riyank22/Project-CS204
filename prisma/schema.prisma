@@ -15,6 +15,8 @@ model users {
   password            String?               @db.VarChar(256)
   created_at          DateTime              @default(now()) @db.Timestamp(0)
   updated_at          DateTime              @default(now()) @db.Timestamp(0)
+  group_members       group_members[]
+  groups              groups[]
   project_enrollments project_enrollments[]
   projects            projects[]
 }
@@ -33,6 +35,8 @@ model projects {
   deadline            DateTime              @db.DateTime(0)
   created_at          DateTime              @default(now()) @db.Timestamp(0)
   updated_at          DateTime              @default(now()) @db.Timestamp(0)
+  group_members       group_members[]
+  groups              groups[]
   project_enrollments project_enrollments[]
   users               users                 @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_project_owner")
 
@@ -49,4 +53,35 @@ model project_enrollments {
 
   @@unique([user_id, project_id], map: "unique_user_project")
   @@index([project_id], map: "fk_project")
+}
+
+model group_members {
+  id         Int      @id @default(autoincrement())
+  group_id   Int
+  project_id Int
+  user_id    Int
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_id")
+  groups     groups   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_members_groups_id_fk")
+  projects   projects @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_members_projects_id_fk")
+
+  @@index([user_id], map: "fk_user_id_idx")
+  @@index([project_id], map: "group_members_projects_id_fk")
+  @@index([group_id], map: "group_members_groups_id_fk")
+}
+
+model groups {
+  id            Int             @id @default(autoincrement())
+  uuid          String          @unique(map: "code_UNIQUE") @default(dbgenerated("(uuid())")) @db.Char(36)
+  project_id    Int
+  name          String          @unique(map: "name") @db.VarChar(128)
+  created_by    Json
+  owner_id      Int
+  created_at    DateTime        @default(now()) @db.Timestamp(0)
+  updated_at    DateTime        @default(now()) @db.Timestamp(0)
+  group_members group_members[]
+  users         users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_group_owner")
+  projects      projects        @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_projects_id_fk")
+
+  @@index([owner_id], map: "fk_group_owner")
+  @@index([project_id], map: "groups_projects_id_fk")
 }

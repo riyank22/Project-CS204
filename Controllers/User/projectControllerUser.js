@@ -135,6 +135,7 @@ exports.getEnrolledProjectList = async (req, res) => {
             },
             select: {
                 name: true,
+                uuid: true,
             },
             orderBy: {
                 created_at: 'desc'
